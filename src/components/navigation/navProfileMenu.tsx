@@ -71,6 +71,6 @@ function NavProfileLink({ link }: {
 
 function Button({ children, link }: Readonly<{ children: React.ReactNode, link: ProfileLink }>){
     if(link.func)
-        return <button onClick={() => { if(link.func) link.func() }} className="text-white-gray">{ children }</button>
+        return <button onClick={() => { if(link.func) link.func() }} className="text-white-gray w-full">{ children }</button>
     else return <Link href={link.href} title={link.name} className="text-white-gray">{ children }</Link>
 }
