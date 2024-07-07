@@ -1,6 +1,5 @@
 "use client"
 import Link from "next/link";
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { FaChevronRight } from "react-icons/fa6";
 import { ProfileLink } from "./nav";
@@ -34,7 +33,7 @@ export default function NavProfileMenu({ profileLinks, user }: {
         </button>
         {showProfile && <div className="absolute right-0 mt-2 w-64 rounded-lg z-20 overflow-hidden bg-black-light shadow-md">
             <div className="hover:bg-white-hover active:bg-white-active border-b border-gray group">
-                <Link href="/account/" className="text-white-gray">
+                <Link href="/account/" className="text-white-gray" title="My Profile">
                     <span>
                         <div className="flex items-center px-4 py-2.5 justify-between">
                             <div className="flex items-center">
@@ -59,13 +58,19 @@ function NavProfileLink({ link }: {
     link: ProfileLink
 }){
     return <div className="hover:bg-white-hover active:bg-white-active rounded-md group">
-        <Link href={link.href} title={link.name} className="text-white-gray">
+        <Button link={link}>
             <span className="block">
                 <div className="flex items-center justify-between px-3 py-2">
                     <p className="text-base">{link.name}</p>
                     { link.chevron && <FaChevronRight className="text-sm group-hover:animate-shakeX"/> }
                 </div>
             </span>
-        </Link>
+        </Button>
     </div>
+}
+
+function Button({ children, link }: Readonly<{ children: React.ReactNode, link: ProfileLink }>){
+    if(link.func)
+        return <button onClick={() => { if(link.func) link.func() }} className="text-white-gray">{ children }</button>
+    else return <Link href={link.href} title={link.name} className="text-white-gray">{ children }</Link>
 }
