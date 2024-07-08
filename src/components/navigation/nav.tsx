@@ -2,8 +2,9 @@
 import { signIn, signOut, useSession } from 'next-auth/react'
 import { ScriptProps } from "next/script";
 import Image from "next/image"
-import NavProfileMenu from "./navProfileMenu";
+import NavProfileMenu from "./ProfileMenu";
 import Link from 'next/link';
+import DiscordButton from '../button/DiscordSignIn';
 
 export type ProfileLink = {
     name: string,
@@ -25,7 +26,6 @@ const profileLinks: ProfileLink[] = [{
 }]
 
 export default function Nav(props: ScriptProps){
-    const { data: session, status } = useSession()
     return <nav className={`${props.className} px-4 flex justify-between items-center`} style={{ height: "64px" }}>
         <Link href="/" title="Home">
             <span>
@@ -35,18 +35,19 @@ export default function Nav(props: ScriptProps){
             </span>
         </Link>
         <div className="flex items-center">
-        { status == 'loading' ? 
-            <UserSceleton/>
-        : (session?.user ? 
-            <NavProfileMenu user={session.user} profileLinks={profileLinks}/> 
-            :
-            <button className="text-white-gray" onClick={() => signIn("discord")}>Login</button>
-        )}
+            <ProfileMenu/>
         </div>
     </nav>
 }
 
-function UserSceleton(){
+function ProfileMenu(){
+    const { data: session, status } = useSession()
+    if(status == 'loading') return <ProfileSceleton/>
+    if(session?.user) return <NavProfileMenu user={session.user} profileLinks={profileLinks}/> 
+    return <DiscordButton onClick={() => signIn("discord")}/>
+}
+
+function ProfileSceleton(){
     return <div className='px-2'>
         <div className="animate-pulse rounded-full w-9 h-9 bg-black-light"></div>
     </div>

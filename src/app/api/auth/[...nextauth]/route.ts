@@ -11,7 +11,7 @@ const providers = [
 const handler = NextAuth({
     providers,
     pages: {
-        // signIn: '/'
+        signIn: undefined
     },
     secret: process.env.JWT_SECRET!
 });

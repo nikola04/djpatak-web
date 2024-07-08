@@ -1,9 +1,9 @@
-import SideNav from "@/components/navigation/sidenav";
+import SideNav from "@/components/navigation/SideNav";
 import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
 import './globals.css'
-import Nav from "@/components/navigation/nav";
-import Providers from "@/components/providers";
+import Nav from "@/components/navigation/Nav";
+import Providers from "@/components/Providers";
 import { getServerSession } from "next-auth";
 
 const nunitoFont = Nunito({ 
