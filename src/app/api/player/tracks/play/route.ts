@@ -14,13 +14,12 @@ playDl.getFreeClientID().then((clientID: string) => {
 export async function POST(req: Request){
     try{
         const { track } : { track: SoundcloudTrack|null } = await req.json()
-        // const { track } = response
         if(!track) return new Response("No track provided")
         const guildId = "717387013216796733"
         const channelId = "876223342246510593"
         const connection = await forceGetVoiceConnection(guildId, channelId)
         if(!connection) return new Response("No connection")
-        const stream = playDl.stream(track.permalink_url)
+        const stream = await playDl.stream(track.permalink_url)
         let resource = createAudioResource(stream.stream, {
             inputType: stream.type
         })

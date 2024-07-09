@@ -29,7 +29,7 @@ function trackClient(client: Client) {
 	client.on(Events.ShardDisconnect, (_, shardId) => {
 		const guilds = trackedShards.get(shardId);
 		if (guilds) {
-			for (const guildID of guilds.values()) {
+			for (const guildID of Array.from(guilds.values())) {
 				adapters.get(guildID)?.destroy();
 			}
 		}
