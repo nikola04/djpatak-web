@@ -1,8 +1,8 @@
-import SideNav from "@/components/navigation/SideNav";
+import SideNav from "@/components/playerNavigation/SideNav";
 import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
 import './globals.css'
-import Nav from "@/components/navigation/Nav";
+import Nav from "@/components/playerNavigation/Nav";
 import Providers from "@/components/Providers";
 import { getServerSession } from "next-auth";
 
@@ -24,18 +24,8 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={nunitoFont.className}>
-        <Providers>
-          <div className="w-screen h-screen bg-blue bg-black-default">
-              <div className="relative w-screen h-screen grid gap-x-8" style={{ gridTemplateRows: "auto 1fr", gridTemplateColumns: "auto 1fr" }}>
-                <Nav className="col-span-2"/>
-                <SideNav/>
-                <div className="w-auto h-auto relative">
-                  {children}
-                </div>
-              </div>
-          </div>
-          </Providers>
-        </body>
+        {children}
+      </body>
     </html>
   );
 }

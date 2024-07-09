@@ -29,7 +29,8 @@ const config: Config = {
       borderColor: {
         black: {
           default: "#131319",
-          pure: "#000000"
+          pure: "#000000",
+          light: "#212126"
         },
         gray: "#3e3e43",
         blue: {
@@ -39,8 +40,8 @@ const config: Config = {
       backgroundColor: {
         white: {
           default: "#ffffff",
-          "hover": "rgba(240, 240, 240, .25)",
-          "active": "rgba(240, 240, 240, .35)",
+          "hover": "rgba(240, 240, 240, .13)",
+          "active": "rgba(240, 240, 240, .2)",
         },
         black: {
           default: "#131319",
@@ -48,8 +49,12 @@ const config: Config = {
           light: "#212126"
         },
         blue: {
+          sky: "#9c9cf7",
           light: "#7e7ef0"
         }
+      },
+      ringColor: {
+        blue: "#aeaefb"
       }
     },
   },

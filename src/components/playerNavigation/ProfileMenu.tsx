@@ -3,13 +3,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { FaChevronRight } from "react-icons/fa6";
 import { ProfileLink } from "./Nav";
-
-function isParentOf(parent: HTMLElement|null, node: HTMLElement|ParentNode|null): boolean{
-    if(!parent) return false;
-    if(!node) return false;
-    if(node == parent) return true;
-    return isParentOf(parent, node.parentNode);
-}
+import { isParentOf } from "@/utils/frontend";
 
 export default function NavProfileMenu({ profileLinks, user }: {
     profileLinks: ProfileLink[],

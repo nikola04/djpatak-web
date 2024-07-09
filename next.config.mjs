@@ -1,17 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    // ...
-    // headers: async () => [
-    //     {
-    //       source: "/:all*(.png|.jpg|.jpeg|.gif|.svg)",
-    //       headers: [
-    //         {
-    //           key: "Cache-Control",
-    //           value: "public, max-age=31536000, must-revalidate",
-    //         },
-    //       ],
-    //     },
-    // ]
+    webpack: (config, options) => {
+        config.module.rules.push({
+          test: /\.node/,
+          use: 'node-loader'
+        })
+     
+        return config
+    },
 };
 
 export default nextConfig;
