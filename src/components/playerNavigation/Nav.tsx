@@ -1,5 +1,4 @@
 "use client"
-import { signIn, signOut, useSession } from 'next-auth/react'
 import { FormEvent, useState } from "react";
 import NavProfileMenu from "./ProfileMenu";
 import DiscordButton from '../button/DiscordSignIn';
@@ -11,6 +10,8 @@ export type ProfileLink = {
     func: (() => void)|null,
     chevron: boolean
 }
+
+const signOut = () => {}
 
 const profileLinks: ProfileLink[] = [{
     name: 'Settings',
@@ -36,9 +37,7 @@ export default function Nav({ guildId }: Readonly<{
         e.stopPropagation()
         console.log(guildId, inputVal)
         if(inputVal.length <= 2) return;
-        const href = `/player/${guildId}/search?query=${encodeURIComponent(inputVal)}`
-        console.log(href)
-        router.push(href)
+        router.push(`/player/${guildId}/search?query=${encodeURIComponent(inputVal)}`)
     }
     return <nav className="px-4 flex justify-between items-center" style={{ height: "64px" }}>
         <form onSubmit={(e) => searchSubmit(e)} className="my-2">
@@ -55,11 +54,15 @@ export default function Nav({ guildId }: Readonly<{
     </nav>
 }
 
+function signIn(arg0: string): void {
+    throw new Error("Function not implemented.");
+}
+
 function ProfileMenu(){
-    const { data: session, status } = useSession()
-    if(status == 'loading') return <ProfileSceleton/>
-    if(session?.user) return <NavProfileMenu user={session.user} profileLinks={profileLinks}/> 
-    return <DiscordButton onClick={() => signIn("discord")}/>
+    // if(status == 'loading') return <ProfileSceleton/>
+    // if(session?.user) return <NavProfileMenu user={session.user} profileLinks={profileLinks}/> 
+
+    return <DiscordButton onClick={() => window.open(process.env.NEXT_PUBLIC_DISCORD_LOGIN_URL)}/>
 }
 
 function ProfileSceleton(){

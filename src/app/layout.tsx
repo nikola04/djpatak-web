@@ -1,11 +1,6 @@
-import SideNav from "@/components/playerNavigation/SideNav";
 import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
 import './globals.css'
-import Nav from "@/components/playerNavigation/Nav";
-import Providers from "@/components/Providers";
-import { getServerSession } from "next-auth";
-import useClient from '@/lib/discord'
 
 const nunitoFont = Nunito({ 
   subsets: ["latin"],

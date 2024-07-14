@@ -19,31 +19,33 @@ function formatDuration(seconds: number): string{
 
 const tracksLimit = 12
 
-export default function SearchPage() {
+export default function SearchPage({ params: { id }}: {
+    params: {
+        id: string
+    }
+}) {
     const searchParams = useSearchParams()
     const query = searchParams.get('query')
     const [loaded, setLoaded] = useState(false)
     const [soundcloudTracks, setSoundcloudTracks] = useState<SoundcloudTrack[]|null>(null)
     const onTrackClick = (track: SoundcloudTrack) => {
-        apiRequest('/api/player/tracks/play', {
+        apiRequest(`http://localhost/api/v1/player/${id}/tracks/${encodeURIComponent(track.permalink_url)}`, {
             method: "POST",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ track })
         })
     }
     useEffect(() => {
         const loadData = async () => { 
             if(query == null) return
             setLoaded(false)
-            const { status, data } = await apiRequest(`/api/player/tracks/search?limit=${tracksLimit}&query=${encodeURIComponent(query)}`, { cache: 'no-cache' }, ResponseDataType.JSON)
+            const { status, data } = await apiRequest(`http://localhost/api/v1/tracks/search/${encodeURIComponent(query)}?limit=${tracksLimit}`, { 
+                cache: 'no-cache'
+            }, ResponseDataType.JSON)
             setLoaded(true)
             if(data == null){
                 // Handle Error
                 return
             }
-            setSoundcloudTracks(data as SoundcloudTrack[])
+            setSoundcloudTracks(data.results as SoundcloudTrack[])
         }
         loadData()
     }, [query])

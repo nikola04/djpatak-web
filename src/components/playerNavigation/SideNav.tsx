@@ -60,7 +60,8 @@ export default function SideNav({ guildId, allowedMenuGroups }: Readonly<{
     const [loading, setLoading] = useState(true)
     useEffect(() => {
         (async () => {
-            const { status, data } = await apiRequest('/api/discord/guilds', { method: "GET", cache: 'no-cache' }, ResponseDataType.JSON, true)
+            const { status, data } = await apiRequest(`${process.env.NEXT_PUBLIC_API_URL!}/api/v1/users/guilds`, { method: "GET", cache: 'no-cache' }, ResponseDataType.JSON, true)
+            console.log(data)
             setLoading(false)
             if(status == 200) return setUserGuilds(data)
             // Error handling

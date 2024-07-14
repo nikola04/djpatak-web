@@ -1,3 +1,7 @@
+'use client'
+import Cookies from 'js-cookie';
+
+import Router from "next/router"
 export enum ResponseDataType {
     JSON,
     Text
@@ -9,7 +13,7 @@ export type APIResponse = {
     error?: any
 }
 
-const attemptRequest = async (input: string | URL | globalThis.Request, attempt: number, useCooldown?: boolean, responseType?: ResponseDataType, init?: RequestInit): Promise<APIResponse> =>  {
+const attemptRequest = async (input: string | URL, attempt: number, useCooldown?: boolean, responseType?: ResponseDataType, init?: RequestInit): Promise<APIResponse> =>  {
     return await fetch(input, init).then(async (res) => {
         if(res.status == 429 && useCooldown){
             const cooldown = (await res.json())?.retry_after;
@@ -34,6 +38,17 @@ const attemptRequest = async (input: string | URL | globalThis.Request, attempt:
     })
 }
 
-export default async function apiRequest(input: string | URL | globalThis.Request, init?: RequestInit, responseType?: ResponseDataType, useCooldown?: boolean): Promise<APIResponse>{
-    return await attemptRequest(input, useCooldown ? 2 : 1, useCooldown, responseType, init);
+export default async function apiRequest(_input: string, init?: RequestInit, responseType?: ResponseDataType, useCooldown?: boolean): Promise<APIResponse>{
+    const csrf = Cookies.get('csrf_token')
+    const input = new URL(_input)
+    if(csrf) input.searchParams.set('csrf', csrf)
+    const { status, data } = await attemptRequest(input, useCooldown ? 2 : 1, useCooldown, responseType, init);
+    if(status != 401) return ({ status, data })
+    // try to refresh token
+    const { status: refrStatus, data: rfrData } = await attemptRequest(`${process.env.NEXT_PUBLIC_API_URL}/auth/token/refresh`, 0, false, ResponseDataType.JSON, {
+        method: 'POST'
+    })
+    if(refrStatus == 200 && rfrData.status == 'ok') return await attemptRequest(input, useCooldown ? 2 : 1, useCooldown, responseType, init)
+    Router.push(process.env.NEXT_PUBLIC_DISCORD_LOGIN_URL!)
+    return ({ status, data })
 }
