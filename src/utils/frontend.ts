@@ -40,7 +40,7 @@ export function useCurrentTrack(playerId: string){
             }
         })()
     }, [])
-    return ({ data, loading })
+    return ({ data, setData, loading })
 }
 
 export function useUserData() {

@@ -30,12 +30,10 @@ export default function PlayerControlls({ className, guildId }: {
     className: string,
     guildId: string
 }){
-    const { loading, data } = useCurrentTrack(guildId)
-    const [trackData, setTrackData] = useState<QueueTrackResponse|null>(data)
-    const setData = (data: QueueTrackResponse|null) => setTrackData(data)
+    const { loading, data, setData } = useCurrentTrack(guildId)
     return <div className={`${className} flex bg-black-default z-10 shadow-md items-center px-4`}  style={{ height: "80px" }}>
         <div className="flex items-center gap-7">
-            <TrackUser loading={loading} data={trackData}/>
+            <TrackUser loading={loading} data={data}/>
             <div className="flex items-center gap-2">
                 <PlayerButton icon={IoIosSkipBackward} onClick={() => playPrev(guildId, setData)} style={{ fontSize: '22px' }}/>
                 <PlayerButton icon={IoIosPause} onClick={() => null} style={{ fontSize: '28px' }}/>
