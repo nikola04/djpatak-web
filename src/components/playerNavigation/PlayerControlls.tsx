@@ -1,6 +1,6 @@
 'use client'
 import apiRequest, { ResponseDataType } from "@/utils/apiRequest";
-import { getCurrentTrack, QueueTrackResponse } from "@/utils/frontend";
+import { QueueTrackResponse, useCurrentTrack } from "@/utils/frontend";
 import { CSSProperties, useState } from "react";
 import { IconType } from "react-icons";
 import { IoIosSkipBackward } from "react-icons/io";
@@ -30,10 +30,12 @@ export default function PlayerControlls({ className, guildId }: {
     className: string,
     guildId: string
 }){
-    const { loading, data, setData } = getCurrentTrack(guildId)
+    const { loading, data } = useCurrentTrack(guildId)
+    const [trackData, setTrackData] = useState<QueueTrackResponse|null>(data)
+    const setData = (data: QueueTrackResponse|null) => setTrackData(data)
     return <div className={`${className} flex bg-black-default z-10 shadow-md items-center px-4`}  style={{ height: "80px" }}>
         <div className="flex items-center gap-7">
-            <TrackUser loading={loading} data={data}/>
+            <TrackUser loading={loading} data={trackData}/>
             <div className="flex items-center gap-2">
                 <PlayerButton icon={IoIosSkipBackward} onClick={() => playPrev(guildId, setData)} style={{ fontSize: '22px' }}/>
                 <PlayerButton icon={IoIosPause} onClick={() => null} style={{ fontSize: '28px' }}/>

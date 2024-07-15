@@ -17,7 +17,7 @@ export type QueueTrackResponse = {
     }
 }
 
-export function getCurrentTrack(playerId: string){
+export function useCurrentTrack(playerId: string){
     const [data, setData] = useState<QueueTrackResponse|null>(null);
     const [loading, setLoading] = useState(true);
     useEffect(() => {
@@ -40,7 +40,7 @@ export function getCurrentTrack(playerId: string){
             }
         })()
     }, [])
-    return ({ data, setData, loading })
+    return ({ data, loading })
 }
 
 export function useUserData() {
