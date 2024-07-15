@@ -61,9 +61,8 @@ export default function SideNav({ guildId, allowedMenuGroups }: Readonly<{
     useEffect(() => {
         (async () => {
             const { status, data } = await apiRequest(`${process.env.NEXT_PUBLIC_API_URL!}/api/v1/users/guilds`, { method: "GET", cache: 'no-cache' }, ResponseDataType.JSON, true)
-            console.log(data)
             setLoading(false)
-            if(status == 200) return setUserGuilds(data)
+            if(status == 200) return setUserGuilds(data.results)
             // Error handling
         })()
     }, [])
@@ -162,7 +161,7 @@ function NavItem({ data, guildId, pathname }: {
         url = data.href.replace("/player/:id", `/player/${guildId}`)
     }
     const Icon = data.icon;
-    return <Link title={data.name} href={url} className={`my-0.5 py-2 rounded-md min-w-40 px-2 hover:bg-white-hover active:bg-white-active transition-all ${isActive(url) ? 'bg-blue-light' : ''}`}>
+    return <Link title={data.name} href={url} className={`my-0.5 py-1.5 rounded-md min-w-40 px-2 hover:bg-white-hover active:bg-white-active transition-all ${isActive(url) ? 'bg-blue-light' : ''}`}>
         <span>
             <div className="flex items-center">
                 <Icon className="text-white-default text-lg"/>

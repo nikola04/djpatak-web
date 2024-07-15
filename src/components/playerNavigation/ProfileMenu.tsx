@@ -29,14 +29,14 @@ export default function NavProfileMenu({ profileLinks, user }: {
             <div className="hover:bg-white-hover active:bg-white-active border-b border-gray group">
                 <Link href="/account/" className="text-white-gray" title="My Profile">
                     <span>
-                        <div className="flex items-center px-4 py-2.5 justify-between">
-                            <div className="flex items-center">
-                                <div className="rounded-full overflow-hidden">
+                        <div className="grid items-center px-4 py-2.5" style={{ gridTemplateColumns: "1fr auto" }}>
+                            <div className="grid items-center" style={{ gridTemplateColumns: "auto 1fr" }}>
+                                <div className="rounded-full overflow-hidden" style={{ width: "34px", height: "34px" }}>
                                     <img src={user.image} alt={'Profile picture'} width={34} height={34}/>
                                 </div>
-                                <p className="px-2">{user.name}</p>
+                                <p className="px-2 overflow-hidden text-nowrap text-ellipsis">{user.name}</p>
                             </div>
-                            <FaChevronRight className="text-sm mr-1 group-hover:animate-shakeX"/>
+                            <FaChevronRight className="text-sm mr-1 group-hover:animate-shakeX ml-auto"/>
                         </div>
                     </span>
                 </Link>

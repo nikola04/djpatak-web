@@ -33,10 +33,10 @@ export default async function RootLayout({
                 <NavLogo/>
                 <Nav guildId={id} />
                 <SideNav guildId={id} allowedMenuGroups={[ "guildSelector", "library", "player"]} />
-                <div className="w-auto h-auto relative overflow-x-hidden overflow-y-scroll mb-2">
+                <div className="w-auto h-auto relative overflow-x-hidden overflow-y-auto mb-1">
                   {children}
                 </div>
-                <PlayerControlls className="col-span-2" style={{ height: "72px" }}/>
+                <PlayerControlls guildId={id} className="col-span-2 border-t border-black-light"/>
               </div>
           </div>
           </Providers>

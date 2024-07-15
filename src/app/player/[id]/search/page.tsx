@@ -29,7 +29,7 @@ export default function SearchPage({ params: { id }}: {
     const [loaded, setLoaded] = useState(false)
     const [soundcloudTracks, setSoundcloudTracks] = useState<SoundcloudTrack[]|null>(null)
     const onTrackClick = (track: SoundcloudTrack) => {
-        apiRequest(`http://localhost/api/v1/player/${id}/tracks/${encodeURIComponent(track.permalink_url)}`, {
+        apiRequest(`${process.env.NEXT_PUBLIC_API_URL!}/api/v1/player/${id}/tracks/${encodeURIComponent(track.permalink)}`, {
             method: "POST",
         })
     }
@@ -37,7 +37,7 @@ export default function SearchPage({ params: { id }}: {
         const loadData = async () => { 
             if(query == null) return
             setLoaded(false)
-            const { status, data } = await apiRequest(`http://localhost/api/v1/tracks/search/${encodeURIComponent(query)}?limit=${tracksLimit}`, { 
+            const { status, data } = await apiRequest(`${process.env.NEXT_PUBLIC_API_URL!}/api/v1/tracks/search/${encodeURIComponent(query)}?limit=${tracksLimit}`, { 
                 cache: 'no-cache'
             }, ResponseDataType.JSON)
             setLoaded(true)
@@ -92,7 +92,7 @@ function SoundCloudTrack({ track, onClick }: Readonly<{
 }>){
     return <div className="group flex w-full p-2 rounded-lg transition-all hover:bg-white-hover active:bg-white-active">
         <div onClick={() => onClick(track)} className="relative rounded overflow-hidden bg-black-light cursor-pointer select-none" style={{ width: "48px", height: "48px" }}>
-            { track.artwork_url && <img width={48} height={48} src={track.artwork_url} className="rounded group-hover:opacity-65 transition-all duration-200" alt="Track Thumbnail" /> }
+            { track.thumbnail && <img width={48} height={48} src={track.thumbnail} className="rounded group-hover:opacity-65 transition-all duration-200" alt="Track Thumbnail" /> }
             <div className="absolute z-10 top-0 left-0 w-full h-full flex items-center justify-center opacity-0 group-hover:opacity-90 transition-all duration-200">
                 <div className="flex bg-black-default rounded-full w-11/12 aspect-square flex items-center justify-center">
                     <FaPlay className="text-white-default text-lg"/>
@@ -102,7 +102,7 @@ function SoundCloudTrack({ track, onClick }: Readonly<{
         <div className="flex flex-col pl-2.5 justify-around">
             <p className="text-white-gray text-base font-bold text-nowrap text-ellipsis overflow-hidden max-w-md w-full">{ track.title }</p>
             <div className="flex text-sm items-center text-white-gray gap-1">
-                <a title={`SoundCloud: ${track.user.username}`} href={track.user.permalink_url} target="_blank" className="hover:underline">{ track.user.username }</a>
+                <a title={`SoundCloud: ${track.user.username}`} href={track.user.permalink} target="_blank" className="hover:underline">{ track.user.username }</a>
                 <DotSeparator/>
                 <p className="">{ formatDuration(Math.ceil(track.duration / 1000)) }</p>
             </div>

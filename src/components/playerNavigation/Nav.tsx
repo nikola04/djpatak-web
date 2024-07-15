@@ -3,6 +3,7 @@ import { FormEvent, useState } from "react";
 import NavProfileMenu from "./ProfileMenu";
 import DiscordButton from '../button/DiscordSignIn';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useUserData } from "@/utils/frontend";
 
 export type ProfileLink = {
     name: string,
@@ -11,7 +12,9 @@ export type ProfileLink = {
     chevron: boolean
 }
 
-const signOut = () => {}
+const signOut = () => {
+    // api endpoint to clear cookies and delete refresh Token from db
+}
 
 const profileLinks: ProfileLink[] = [{
     name: 'Settings',
@@ -59,9 +62,10 @@ function signIn(arg0: string): void {
 }
 
 function ProfileMenu(){
-    // if(status == 'loading') return <ProfileSceleton/>
-    // if(session?.user) return <NavProfileMenu user={session.user} profileLinks={profileLinks}/> 
-
+    const { loading, data } = useUserData()
+    // console.log(loading, data)
+    if(loading) return <ProfileSceleton/>
+    if(data) return <NavProfileMenu user={data} profileLinks={profileLinks}/> 
     return <DiscordButton onClick={() => window.open(process.env.NEXT_PUBLIC_DISCORD_LOGIN_URL)}/>
 }
 
