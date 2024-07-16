@@ -31,7 +31,6 @@ export async function middleware(req: NextRequest) {
           }
         })
         const data = await res.json()
-        console.log(data)
         if(res.status == 200){
           if(data.status == 'ok' && data.accessToken && data.refreshToken){
             const nextRes = NextResponse.next()
@@ -59,7 +58,7 @@ export async function middleware(req: NextRequest) {
         console.log(err)
       }
     }
-    // return NextResponse.redirect(process.env.NEXT_PUBLIC_DISCORD_LOGIN_URL!)
+    return NextResponse.redirect(process.env.NEXT_PUBLIC_DISCORD_LOGIN_URL!)
   }
 }
 
