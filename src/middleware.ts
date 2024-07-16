@@ -18,44 +18,48 @@ export async function middleware(req: NextRequest) {
     if(!data.payload.userId) throw 'No User Id'
     return NextResponse.next()
   } catch (err) {
-    // const refreshTokenCookie = req.cookies.get('refresh_token')
-    // if(err instanceof JWTExpired && refreshTokenCookie)
-    // {
-    //   try{
-    //     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/token/refresh`, {
-    //       method: 'POST',
-    //       cache: 'no-cache',
-    //       headers: {
-    //         Authorization: `Bearer ${refreshTokenCookie.value}`
-    //       }
-    //     })
-    //     if(res.status == 200){
-    //       const data = await res.json()
-    //       if(data.status == 'ok' && data.access_token && data.refresh_token){
-    //         const nextRes = NextResponse.next()
-    //         const expirationDate = new Date();
-    //         expirationDate.setMonth(expirationDate.getMonth() + 6);
-    //         const { access_token, refresh_token } = data
-    //         nextRes.cookies.set('access_token', access_token, {
-    //           sameSite: 'strict',
-    //           httpOnly: true,
-    //           secure: true,
-    //           expires: expirationDate
-    //         })
-    //         nextRes.cookies.set('refresh_token', refresh_token, {
-    //           sameSite: 'strict',
-    //           httpOnly: true,
-    //           secure: true,
-    //           expires: expirationDate
-    //         })
-    //         return nextRes
-    //       }
-    //     }
-    //   }catch(err){
-    //     console.log(err)
-    //   }
-    // }
-    return NextResponse.redirect(process.env.NEXT_PUBLIC_DISCORD_LOGIN_URL!)
+    const refreshTokenCookie = req.cookies.get('refresh_token')
+    if(err instanceof JWTExpired && refreshTokenCookie?.value)
+    {
+      try{
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/token/refresh`, {
+          method: 'POST',
+          cache: 'no-cache',
+          headers: {
+            Authorization: `Bearer ${refreshTokenCookie.value}`,
+            getSetCookie: ''
+          }
+        })
+        const data = await res.json()
+        console.log(data)
+        if(res.status == 200){
+          if(data.status == 'ok' && data.accessToken && data.refreshToken){
+            const nextRes = NextResponse.next()
+            const expirationDate = new Date();
+            expirationDate.setMonth(expirationDate.getMonth() + 6);
+            const { accessToken, refreshToken } = data
+            nextRes.cookies.set('access_token', accessToken, {
+              sameSite: 'strict',
+              path: '/',
+              httpOnly: true,
+              secure: true,
+              expires: expirationDate
+            })
+            nextRes.cookies.set('refresh_token', refreshToken, {
+              sameSite: 'strict',
+              path: '/',
+              httpOnly: true,
+              secure: true,
+              expires: expirationDate
+            })
+            return nextRes
+          }
+        }
+      }catch(err){
+        console.log(err)
+      }
+    }
+    // return NextResponse.redirect(process.env.NEXT_PUBLIC_DISCORD_LOGIN_URL!)
   }
 }
 
