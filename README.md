@@ -4,7 +4,7 @@ Web interface for discord music bot
 This web project is used as UI to manage Discord Music Bot using API Server:
 https://github.com/nikola04/djpatak-api
 
-### User should have full access to their Player.
+### What is expected from this project?
 - Live player controll (Playing Tracks, Volume, Pause, Skip, etc.)
 - Tracks Search, Queues, Playlists, Liked Songs
 - Admin Panel - Managing admin roles, bot settings, etc.
