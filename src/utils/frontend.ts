@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import apiRequest, { ResponseDataType } from "./apiRequest";
-import { SoundcloudTrack } from "@/types/soundcloud";
+import { QueueTrack } from "@/types/soundcloud";
+import { DiscordGuild } from "@/types/discord";
 
 export function isParentOf(parent: HTMLElement|null, node: HTMLElement|ParentNode|null): boolean{
     if(!parent) return false;
@@ -11,14 +12,11 @@ export function isParentOf(parent: HTMLElement|null, node: HTMLElement|ParentNod
 
 export type QueueTrackResponse = {
     status: string,
-    queueTrack: {
-        queueId: string,
-        track: SoundcloudTrack
-    }
+    queueTrack: QueueTrack
 }
 
 export function useCurrentTrack(playerId: string){
-    const [data, setData] = useState<QueueTrackResponse|null>(null);
+    const [data, setData] = useState<QueueTrack|null>(null);
     const [loading, setLoading] = useState(true);
     useEffect(() => {
         (async () => {
@@ -27,12 +25,9 @@ export function useCurrentTrack(playerId: string){
                     method: 'GET',
                     cache: 'no-cache'
                 }, ResponseDataType.JSON)
-                if(data.status == 'ok')
-                    return setData({
-                        status: data.playerStatus,
-                        queueTrack: data.queueTrack
-                    })
-                setData(null)
+                if(data.status != 'ok') return setData(null)
+                const queueTrackResp = data as QueueTrackResponse
+                return setData(queueTrackResp.queueTrack)
             }catch(err){
                 setData(null)
             }finally{
@@ -41,6 +36,22 @@ export function useCurrentTrack(playerId: string){
         })()
     }, [])
     return ({ data, setData, loading })
+}
+
+export function useUserGuilds(){
+    const [data, setData] = useState<DiscordGuild[]>([])
+    const [loading, setLoading] = useState(true)
+    useEffect(() => {
+        (async () => {
+            const { status, data } = await apiRequest(`${process.env.NEXT_PUBLIC_API_URL!}/api/v1/users/guilds`, { method: "GET", cache: 'no-cache' }, ResponseDataType.JSON, true)
+            setLoading(false)
+            if(status == 200 && data.status == 'ok') {
+                const results = data.results as DiscordGuild[]
+                setData(results)
+            }
+        })()
+    }, [])
+    return ({ data, loading })
 }
 
 export function useUserData() {

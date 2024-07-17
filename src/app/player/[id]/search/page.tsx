@@ -1,5 +1,5 @@
 'use client'
-import { SoundcloudTrack } from "@/types/soundcloud";
+import { Track } from "@/types/soundcloud";
 import apiRequest, { ResponseDataType } from "@/utils/apiRequest";
 import { FaPlay } from "react-icons/fa";
 import { useSearchParams } from "next/navigation";
@@ -27,8 +27,8 @@ export default function SearchPage({ params: { id }}: {
     const searchParams = useSearchParams()
     const query = searchParams.get('query')
     const [loaded, setLoaded] = useState(false)
-    const [soundcloudTracks, setSoundcloudTracks] = useState<SoundcloudTrack[]|null>(null)
-    const onTrackClick = (track: SoundcloudTrack) => {
+    const [soundcloudTracks, setSoundcloudTracks] = useState<Track[]|null>(null)
+    const onTrackClick = (track: Track) => {
         apiRequest(`${process.env.NEXT_PUBLIC_API_URL!}/api/v1/player/${id}/tracks/${encodeURIComponent(track.permalink)}`, {
             method: "POST",
         })
@@ -45,7 +45,7 @@ export default function SearchPage({ params: { id }}: {
                 // Handle Error
                 return
             }
-            setSoundcloudTracks(data.results as SoundcloudTrack[])
+            setSoundcloudTracks(data.results as Track[])
         }
         loadData()
     }, [query])
@@ -61,9 +61,9 @@ export default function SearchPage({ params: { id }}: {
 }
 
 function SoundCloudTracks({ soundcloudTracks, loaded, onTrackClick }: Readonly<{
-    soundcloudTracks: SoundcloudTrack[]|null,
+    soundcloudTracks: Track[]|null,
     loaded: boolean,
-    onTrackClick: (track: SoundcloudTrack) => any
+    onTrackClick: (track: Track) => any
 }>){
     if(!loaded) return <div>
         { [...new Array(tracksLimit)].map((val, ind) => <SoundCloudTrackSceleton key={ind} /> ) }
@@ -87,14 +87,14 @@ function SoundCloudTrackSceleton(){
 }
 
 function SoundCloudTrack({ track, onClick }: Readonly<{
-    track: SoundcloudTrack,
-    onClick: (track: SoundcloudTrack) => any
+    track: Track,
+    onClick: (track: Track) => any
 }>){
     return <div className="group flex w-full p-2 rounded-lg transition-all hover:bg-white-hover active:bg-white-active">
         <div onClick={() => onClick(track)} className="relative rounded overflow-hidden bg-black-light cursor-pointer select-none" style={{ width: "48px", height: "48px" }}>
             { track.thumbnail && <img width={48} height={48} src={track.thumbnail} className="rounded group-hover:opacity-65 transition-all duration-200" alt="Track Thumbnail" /> }
             <div className="absolute z-10 top-0 left-0 w-full h-full flex items-center justify-center opacity-0 group-hover:opacity-90 transition-all duration-200">
-                <div className="flex bg-black-default rounded-full w-11/12 aspect-square flex items-center justify-center">
+                <div className="flex bg-black-default rounded-full w-11/12 aspect-square items-center justify-center">
                     <FaPlay className="text-white-default text-lg"/>
                 </div>
             </div>

@@ -1,4 +1,4 @@
-export type SoundcloudTrack = {
+export type Track = {
     id: number
     title: string
     permalink: string
@@ -11,4 +11,8 @@ export type SoundcloudTrack = {
         thumbnail: string
     }
     formats: any[]
+}
+export type QueueTrack = {
+    queueId: string,
+    track: Track
 }

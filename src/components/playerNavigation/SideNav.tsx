@@ -8,9 +8,10 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { DiscordGuild } from "@/types/discord";
 import apiRequest, { ResponseDataType } from "@/utils/apiRequest";
-import { isParentOf } from "@/utils/frontend";
+import { isParentOf, useUserGuilds } from "@/utils/frontend";
 import { useRouter } from "next/navigation";
 import { FaHeart } from "react-icons/fa6";
+import { GuildIcon } from "../discord/GuildIcon";
 
 type LinkType = {
     name: string,
@@ -56,16 +57,15 @@ export default function SideNav({ guildId, allowedMenuGroups }: Readonly<{
     guildId: string,
     allowedMenuGroups: string[]
 }>){
-    const [userGuilds, setUserGuilds] = useState<DiscordGuild[]>([])
-    const [loading, setLoading] = useState(true)
+
+    const { data: userGuilds, loading } = useUserGuilds()
+    const router = useRouter()
     useEffect(() => {
-        (async () => {
-            const { status, data } = await apiRequest(`${process.env.NEXT_PUBLIC_API_URL!}/api/v1/users/guilds`, { method: "GET", cache: 'no-cache' }, ResponseDataType.JSON, true)
-            setLoading(false)
-            if(status == 200) return setUserGuilds(data.results)
-            // Error handling
-        })()
-    }, [])
+        if(!loading){
+            if(!userGuilds.some(({ id }) => id == guildId)) 
+                router.push('/player/select-server')
+        }
+    }, [loading, userGuilds])
     const pathname = usePathname()
     const enabledLinkGroups = linksGrouped.filter((group) => allowedMenuGroups.includes(group.id))
     return <div className="p-4 flex flex-col">
@@ -123,18 +123,6 @@ function GuildSelector({ userGuilds, selectedId }: Readonly<{
                 <p className="text-white-gray px-2 text-base text-nowrap text-ellipsis overflow-hidden">Add Server</p>
             </div>
         </div> }
-    </div>
-}
-
-function GuildIcon({ guild, size }: Readonly<{
-    guild: DiscordGuild,
-    size: number
-}>){
-    const iconUrl = guild.icon ? "https://cdn.discordapp.com/icons/" + guild.id + "/" + guild.icon + (guild.icon.startsWith("a_") ? ".gif" : ".png") : null
-    if(iconUrl) 
-        return <img src={iconUrl} alt="Guild Icon" width={size} height={size} className="rounded-full" />
-    return <div style={{ width: `${size}px`, height: `${size}px` }} className="flex items-center justify-center border-2 border-black-default rounded-full">
-        <p className="text-center font-bold text-sm text-white-default">{ guild.name[0].toUpperCase() }</p>
     </div>
 }
 
