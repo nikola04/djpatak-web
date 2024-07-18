@@ -1,8 +1,8 @@
 'use client'
 import { QueueTrack } from "@/types/soundcloud";
 import apiRequest, { ResponseDataType } from "@/utils/apiRequest";
-import { QueueTrackResponse, useCurrentTrack } from "@/utils/frontend";
-import { socketEventHandler, subscribeSocketToPlayer, useSockets } from "@/utils/sockets";
+import { useCurrentTrack } from "@/utils/frontend";
+import { socketEventHandler, useSockets } from "@/utils/sockets";
 import { CSSProperties, useEffect } from "react";
 import { IconType } from "react-icons";
 import { IoIosSkipBackward } from "react-icons/io";
@@ -36,25 +36,25 @@ export default function PlayerControlls({ className, guildId }: {
     const { socket, ready } = useSockets()
     useEffect(() => {
         if(!socket || !ready) return
-        subscribeSocketToPlayer(socket, guildId)
-        const handler = new socketEventHandler(socket)
+        const handler = new socketEventHandler(socket, guildId)
         handler.subscribe('now-playing', (track: QueueTrack) => {
             console.log(track)
             setData(track)
         })
-        // setData(data.data)
     }, [socket, ready, guildId])
-    return <div className={`${className} flex bg-black-default z-10 shadow-md items-center px-4`}  style={{ height: "80px" }}>
-        <div className="flex items-center gap-7">
-            <TrackUser loading={loading} data={data}/>
-            <div className="flex items-center gap-2">
-                <PlayerButton icon={IoIosSkipBackward} onClick={() => playPrev(guildId, setData)} style={{ fontSize: '22px' }}/>
-                <PlayerButton icon={IoIosPause} onClick={() => null} style={{ fontSize: '28px' }}/>
-                <PlayerButton icon={IoIosSkipForward} onClick={() => playNext(guildId, setData)} style={{ fontSize: '22px' }}/>
-                <PlayerButton icon={IoIosRepeat} onClick={() => null} style={{ fontSize: '28px' }}/>
+    if(data) 
+        return <div className={`${className} flex bg-black-default z-10 shadow-md items-center px-4`}  style={{ height: "80px" }}>
+            <div className="flex items-center gap-7">
+                <TrackUser loading={loading} data={data}/>
+                <div className="flex items-center gap-2">
+                    <PlayerButton icon={IoIosSkipBackward} onClick={() => playPrev(guildId, setData)} style={{ fontSize: '22px' }}/>
+                    <PlayerButton icon={IoIosPause} onClick={() => null} style={{ fontSize: '28px' }}/>
+                    <PlayerButton icon={IoIosSkipForward} onClick={() => playNext(guildId, setData)} style={{ fontSize: '22px' }}/>
+                    <PlayerButton icon={IoIosRepeat} onClick={() => null} style={{ fontSize: '28px' }}/>
+                </div>
             </div>
         </div>
-    </div>
+    return null
 }
 
 function TrackUser({ loading, data }: {
@@ -67,8 +67,8 @@ function TrackUser({ loading, data }: {
             <img src={data.track.thumbnail} width={48} height={48}/>
         </div>
         <div className="text-white-gray w-48 flex flex-col justify-around">
-            <a href={data.track.permalink} target="_blank" className="font-bold text-ellipsis text-nowrap overflow-hidden hover:underline leading-3 text-base">{data.track.title}</a>
-            <a href={data.track.user.permalink} target="_blank" className="text-ellipsis text-nowrap overflow-hidden hover:underline leading-3 text-sm">{data.track.user.username}</a>
+            <a href={data.track.permalink} title={data.track.title} target="_blank" className="font-bold text-ellipsis text-nowrap overflow-hidden hover:underline leading-3 text-base">{data.track.title}</a>
+            <a href={data.track.user.permalink} title={data.track.user.username} target="_blank" className="text-ellipsis text-nowrap overflow-hidden hover:underline leading-3 text-sm">{data.track.user.username}</a>
         </div>
     </div>
     return null

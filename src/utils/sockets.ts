@@ -35,20 +35,18 @@ export function useSockets(){
     return { socket, ready }
 }
 
-export function subscribeSocketToPlayer(socket:WebSocket, playerId: string){
-    socket.send(JSON.stringify({
-        event: 'subscribe',
-        data: {
-            playerId: playerId
-        }
-    }))
-}
 
 type EventType = 'now-playing'|'new-queue-song'|'queue-end'|'pause'|'resume'
 export class socketEventHandler{
     private eventsMap: Map<EventType, (data?: any) => any>
-    constructor(socket: WebSocket){
+    constructor(socket: WebSocket, playerId: string){
         this.eventsMap = new Map()
+        socket.send(JSON.stringify({
+            event: 'subscribe',
+            data: {
+                playerId
+            }
+        }))
         socket.onmessage = (message) => {
             try{
                 const messageData = JSON.parse(message.data)
