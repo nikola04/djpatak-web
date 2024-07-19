@@ -28,8 +28,8 @@ export function useSockets(){
             setSocket(ws);
         }
         return () => {
-            setReady(false)
-            ws?.close();
+            // ws?.close(); // no need to close because its singletone
+            // connection should stay so it would work on other pages
         };
     }, []);
 
@@ -44,15 +44,12 @@ export function useSockets(){
 type EventType = 'now-playing'|'new-queue-song'|'queue-end'|'pause'|'resume'
 export class socketEventHandler{
     private eventsMap: Map<EventType, (data?: any) => any>
+    private socket: WebSocket
+    private messageEvent: (message: MessageEvent) => void
     constructor(socket: WebSocket, playerId: string){
         this.eventsMap = new Map()
-        socket.send(JSON.stringify({
-            event: 'subscribe',
-            data: {
-                playerId
-            }
-        }))
-        socket.addEventListener('message', (message) => {
+        this.socket = socket
+        this.messageEvent = (message: MessageEvent) => {
             try{
                 const messageData = JSON.parse(message.data)
                 if(!messageData.event || !messageData.data) return
@@ -62,7 +59,14 @@ export class socketEventHandler{
             }catch(err){
                 console.error(err)
             }
-        })
+        }
+        this.socket.addEventListener('message', this.messageEvent)
+        this.socket.send(JSON.stringify({
+            event: 'subscribe',
+            data: {
+                playerId
+            }
+        }))
     }
     public subscribe(ev: 'now-playing'|'new-queue-song', handler: (track: QueueTrack) => any): void;
     public subscribe(ev: Exclude<EventType, 'now-playing'|'new-queue-song'>, handler: () => any): void;
@@ -71,5 +75,7 @@ export class socketEventHandler{
     }
     public destroy(){
         this.eventsMap.clear()
+        this.socket.removeEventListener('message', this.messageEvent)
+        this.messageEvent = () => {}
     }
 }
