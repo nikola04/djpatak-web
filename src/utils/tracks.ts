@@ -37,7 +37,7 @@ export function useCurrentTrack(playerId: string){
                 setLoading(false)
             }
         })()
-    }, [])
+    }, [playerId])
     return ({ data, setData, loading })
 }
 
@@ -60,6 +60,6 @@ export function usePlayerQueue(playerId: string){
                 setLoading(false)
             }
         })()
-    }, [])
+    }, [playerId])
     return ({ data, setData, loading })
 }

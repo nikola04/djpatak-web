@@ -64,7 +64,7 @@ export default function SideNav({ guildId, allowedMenuGroups }: Readonly<{
             if(!userGuilds.some(({ id }) => id == guildId)) 
                 router.push('/player/select-server')
         }
-    }, [loading, userGuilds])
+    }, [loading, userGuilds, guildId, router])
     const pathname = usePathname()
     const enabledLinkGroups = linksGrouped.filter((group) => allowedMenuGroups.includes(group.id))
     return <div className="p-4 flex flex-col">
