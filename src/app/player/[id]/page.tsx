@@ -21,6 +21,7 @@ export default function Home({ params: { id }}: {
         if(!ready) return
         const handler = new socketEventHandler(socket, id)
         handler.subscribe('now-playing', (track) => setTrack(track))
+        handler.subscribe('new-queue-song', (track: QueueTrack) => setQueue(prev => [...prev, track]))
         return () => handler.destroy()
     }, [ready, socket, id])
 
@@ -72,11 +73,8 @@ function PlayerQueueTrack({ track, onPlay, current }: {
                 { track.track.thumbnail && <img width={48} height={48} src={track.track.thumbnail} className="rounded group-hover:opacity-65 transition-all duration-200" alt="Track Thumbnail" /> }
                 <div className={`absolute z-10 top-0 left-0 w-full h-full flex items-center justify-center transition-all duration-200 ${!current && "opacity-0 group-hover:opacity-90"}`}>
                     <div className="flex bg-black-default rounded-full w-11/12 aspect-square items-center justify-center">
-                        { !current ? 
-                            <FaPlay className="text-white-default text-lg"/>
-                        :
-                            <GiSoundWaves className="text-white-default text-lg"/>
-                        }
+                        { !current ? <FaPlay className="text-white-default text-lg"/>
+                        : <GiSoundWaves className="text-white-default text-lg"/>}
                     </div>
                 </div>
             </div>
@@ -100,14 +98,15 @@ function TrackHeader({ track, loading }: {
 }){
     if(loading) return <TrackHeaderSceleton/>
     if(!track) return null
-    track.thumbnail = track.thumbnail.replace('-large', '-t500x500')
+    if(track.thumbnail) track.thumbnail = track.thumbnail.replace('-large', '-t500x500')
     return <div className="p-2 w-80">
-        <div className="w-full overflow-hidden rounded hover:scale-102 hover:shadow-lg transition-all duration-200">
-            <img src={track.thumbnail} alt="Track Banner" className="min-w-full aspect-square"/>
+        <div className="w-full overflow-hidden rounded hover:shadow-lg transition-all duration-200 bg-black-light">
+            { track.thumbnail ? <img src={track.thumbnail} alt="Track Banner" className="min-w-full aspect-square"/> 
+            : <div className="min-w-full aspect-square"></div> }
         </div>
         <div className="px-1 py-4">
             <p title={track.title} className="text-white-default font-bold text-center text-nowrap text-ellipsis overflow-hidden text-lg">{track.title}</p>
-            <p className="text-white-gray text-center text-sm py-1">{formatDuration(Math.floor(track.duration/1000))}</p>
+            <p className="text-white-gray text-center text-sm py-1">{ track.user.username }</p>
         </div>
     </div>
 }
@@ -117,7 +116,7 @@ function TrackHeaderSceleton(){
     <div className="w-full overflow-hidden aspect-square bg-black-light animate-pulse"></div>
     <div className="px-1 py-5 flex flex-col items-center justify-center">
         <div className="bg-black-light animate-pulse w-64 h-4"></div>
-        <div className="bg-black-light animate-pulse w-12 h-3 my-3.5"></div>
+        <div className="bg-black-light animate-pulse w-32 h-3 my-3.5"></div>
     </div>
 </div>
 }
