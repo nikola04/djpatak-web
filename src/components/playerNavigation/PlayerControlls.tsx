@@ -1,53 +1,81 @@
 'use client'
 import { QueueTrack } from "@/types/soundcloud";
-import apiRequest, { ResponseDataType } from "@/utils/apiRequest";
 import { useCurrentTrack } from "@/utils/tracks";
 import { socketEventHandler, useSockets } from "@/utils/sockets";
 import { CSSProperties, useEffect } from "react";
 import { IconType } from "react-icons";
-import { IoIosSkipBackward } from "react-icons/io";
+import { IoIosPlay, IoIosSkipBackward } from "react-icons/io";
 import { IoIosSkipForward } from "react-icons/io";
 import { IoIosPause } from "react-icons/io";
 import { IoIosShuffle } from "react-icons/io";
 import { IoIosRepeat } from "react-icons/io";
-
-const playPrev = async (guildId: string, setData: (arg: QueueTrack|null) => void) => {
-    const { status, data } = await apiRequest(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/player/${guildId}/tracks/prev`, {
-        method: 'POST'
-    }, ResponseDataType.JSON)
-    if(data.player.queueTrack)
-        return setData(data.player.queueTrack)
-    // handle error
-}
-const playNext = async (guildId: string, setData: (arg: QueueTrack|null) => void) => {
-    const { status, data } = await apiRequest(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/player/${guildId}/tracks/next`, {
-        method: 'POST'
-    }, ResponseDataType.JSON)
-    if(data.player.queueTrack)
-        return setData(data.player.queueTrac)
-    // handle error
-}
+import { next, pause, prev, resume } from "@/utils/controlls";
+import { useAlert } from "../Alert";
 
 export default function PlayerControlls({ className, guildId }: {
     className: string,
     guildId: string
 }){
-    const { loading, data, setData } = useCurrentTrack(guildId)
+    const { loading, data, setData, status, setStatus } = useCurrentTrack(guildId)
     const { socket, ready } = useSockets()
+    const { pushAlert } = useAlert()
     useEffect(() => {
         if(!ready) return
         const handler = new socketEventHandler(socket, guildId)
-        handler.subscribe('now-playing', (track) => setData(track))
+        handler.subscribe('now-playing', (track) => {
+            setData(track); setStatus('playing');
+        })
+        handler.subscribe('queue-end', () => {
+            setData(null); setStatus('paused');
+        })
+        handler.subscribe('pause', () => setStatus('paused'))
+        handler.subscribe('resume', () => setStatus('playing'))
         return () => handler.destroy()
-    }, [ready, socket, guildId])
+    }, [ready, socket, guildId, setData, setStatus])
+    // On Clicks
+    const playPrev = async () => {
+        try{
+            const { playerStatus, queueTrack } = await prev(guildId);
+            setData(queueTrack); setStatus(playerStatus);
+        }catch(err){
+            console.error(err)
+            pushAlert(String(err))
+        }
+    }
+    const playNext = async () => {
+        try{
+            const { playerStatus, queueTrack } = await next(guildId);
+            setData(queueTrack); setStatus(playerStatus);
+        }catch(err){
+            console.error(err)
+            pushAlert(String(err))
+        }
+    }
+    const pausePress = async () => {
+        try{
+            if(await pause(guildId)) setStatus('paused')
+        }catch(err){
+            console.error(err)
+            pushAlert(String(err))
+        }
+    }
+    const resumePress = async () => {
+        try{
+            if(await resume(guildId)) setStatus('playing');
+        }catch(err){
+            console.error(err)
+            pushAlert(String(err))
+        }
+    }
     if(data) 
         return <div className={`${className} flex bg-black-default z-10 shadow-md items-center px-4`}  style={{ height: "80px" }}>
             <div className="flex items-center gap-7">
                 <TrackUser loading={loading} data={data}/>
                 <div className="flex items-center gap-2">
-                    <PlayerButton icon={IoIosSkipBackward} onClick={() => playPrev(guildId, setData)} style={{ fontSize: '22px' }}/>
-                    <PlayerButton icon={IoIosPause} onClick={() => null} style={{ fontSize: '28px' }}/>
-                    <PlayerButton icon={IoIosSkipForward} onClick={() => playNext(guildId, setData)} style={{ fontSize: '22px' }}/>
+                    <PlayerButton icon={IoIosSkipBackward} onClick={playPrev} style={{ fontSize: '22px' }}/>
+                    { status == 'playing' ? <PlayerButton icon={IoIosPause} onClick={pausePress} style={{ fontSize: '28px' }}/>
+                    : <PlayerButton icon={IoIosPlay} onClick={resumePress} style={{ fontSize: '28px' }}/>}
+                    <PlayerButton icon={IoIosSkipForward} onClick={playNext} style={{ fontSize: '22px' }}/>
                     <PlayerButton icon={IoIosRepeat} onClick={() => null} style={{ fontSize: '28px' }}/>
                 </div>
             </div>

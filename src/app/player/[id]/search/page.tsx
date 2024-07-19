@@ -22,7 +22,7 @@ export default function SearchPage({ params: { id }}: {
     const [loaded, setLoaded] = useState(false)
     const [soundcloudTracks, setSoundcloudTracks] = useState<Track[]|null>(null)
     const playTrack = (track: Track, force?: boolean) => {
-        const url = new URL(`${process.env.NEXT_PUBLIC_API_URL!}/api/v1/player/${id}/tracks/${encodeURIComponent(track.permalink)}`)
+        const url = new URL(`${process.env.NEXT_PUBLIC_API_URL!}/api/v1/player/${id}/tracks/soundcloud/${encodeURIComponent(track.permalink)}`)
         if(force) url.searchParams.set('force', '1')
         apiRequest(url.href, {
             method: "POST",

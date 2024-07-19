@@ -1,3 +1,4 @@
+import { QueueTrack } from '@/types/soundcloud';
 import Cookies from 'js-cookie';
 
 export enum ResponseDataType {
@@ -9,6 +10,18 @@ export type APIResponse = {
     status: number,
     data: any,
     errorData?: any
+}
+
+export type QueueTrackResponse = {
+    status: 'ok',
+    error: undefined,
+    playerStatus: 'playing'|'paused',
+    queueTrack: QueueTrack
+}|{
+    status: 'error',
+    error: string,
+    playerStatus?: 'playing'|'paused',
+    queueTrack?: QueueTrack
 }
 
 const formatResponseData = async (res: Response, responseType?: ResponseDataType) => {
@@ -35,7 +48,7 @@ const attemptRequest = async (input: string | URL, attempt: number, useCooldown?
                     res(await attemptRequest(input, attempt + 1, useCooldown, responseType, init))
                 }, attempt * 100))
             else if(!res.ok)
-                return ({ status: res.status, data: null, errorData: await formatResponseData(res, responseType) })
+                return ({ status: res.status, data: await formatResponseData(res, responseType) })
             return ({ status: res.status, data: await formatResponseData(res, responseType) })
         }catch(err){
             return ({ status: res.status, data: null, errorData: err as any })

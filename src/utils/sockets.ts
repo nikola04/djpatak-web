@@ -52,10 +52,11 @@ export class socketEventHandler{
         this.messageEvent = (message: MessageEvent) => {
             try{
                 const messageData = JSON.parse(message.data)
-                if(!messageData.event || !messageData.data) return
+                if(!messageData.event) return
                 const { event, data } = messageData
                 const func = this.eventsMap.get(event)
-                if(func) func(data)
+                if(func && data != null) func(data)
+                else if(func) func()
             }catch(err){
                 console.error(err)
             }

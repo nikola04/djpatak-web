@@ -1,13 +1,13 @@
 'use client'
 
 import { QueueTrack, Track } from "@/types/soundcloud";
-import { formatDuration, useCurrentTrack, usePlayerQueue } from "@/utils/tracks";
+import { formatDuration, playTrackByQueueId, useCurrentTrack, usePlayerQueue } from "@/utils/tracks";
 import { socketEventHandler, useSockets } from "@/utils/sockets";
 import { useEffect } from "react";
 import { FaPlay } from "react-icons/fa";
 import { GoDotFill } from "react-icons/go";
-import apiRequest from "@/utils/apiRequest";
 import { GiSoundWaves } from "react-icons/gi";
+import { useAlert } from "@/components/Alert";
 
 export default function Home({ params: { id }}: {
     params: {
@@ -17,19 +17,23 @@ export default function Home({ params: { id }}: {
     const { data: track, setData: setTrack, loading: trackLoading } = useCurrentTrack(id)
     const { data: queue, setData: setQueue, loading: queueLoading } = usePlayerQueue(id)
     const { socket, ready } = useSockets()
+    const { pushAlert } = useAlert()
     useEffect(() => {
         if(!ready) return
         const handler = new socketEventHandler(socket, id)
         handler.subscribe('now-playing', (track) => setTrack(track))
+        handler.subscribe('queue-end', () => setTrack(null))
         handler.subscribe('new-queue-song', (track: QueueTrack) => setQueue(prev => [...prev, track]))
         return () => handler.destroy()
     }, [ready, socket, id])
-
-    const playTrack = (track: QueueTrack) => {
-        const url = new URL(`${process.env.NEXT_PUBLIC_API_URL!}/api/v1/player/${id}/tracks/queue/${encodeURIComponent(track.queueId)}`)
-        apiRequest(url.href, {
-            method: "POST",
-        })
+    const playTrack = async (track: QueueTrack) => {
+        try{
+            await playTrackByQueueId(id, track.queueId)
+            setTrack(track)
+        }catch(err){
+            pushAlert(String(err))
+            console.error(err)
+        }
     }
     return <div className="flex px-3 py-6 gap-10">
         <TrackHeader loading={trackLoading} track={track?.track}/>

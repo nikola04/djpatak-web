@@ -1,6 +1,6 @@
 import { QueueTrack } from "@/types/soundcloud";
 import { useEffect, useState } from "react";
-import apiRequest, { ResponseDataType } from "./apiRequest";
+import apiRequest, { QueueTrackResponse, ResponseDataType } from "./apiRequest";
 
 export function formatDuration(seconds: number): string{
     const twoDigits = (num: number): string => num < 10 ? `0${num}` : `${num}`
@@ -13,24 +13,30 @@ export function formatDuration(seconds: number): string{
     return `${hours}:${twoDigits(minutes % 60)}:${twoDigits(seconds % 60)}`
 }
 
-export type QueueTrackResponse = {
-    status: string,
-    queueTrack: QueueTrack
+export async function playTrackByQueueId(playerId: string, queueId: string){
+    const url = new URL(`${process.env.NEXT_PUBLIC_API_URL!}/api/v1/player/${playerId}/tracks/queue/${encodeURIComponent(queueId)}`)
+    const { data } = await apiRequest(url.href, {
+        method: 'POST',
+    }, ResponseDataType.JSON)
+    if(data.status == 'ok') return true
+    throw data.error
 }
 
 export function useCurrentTrack(playerId: string){
     const [data, setData] = useState<QueueTrack|null>(null);
+    const [status, setStatus] = useState<'playing'|'paused'>('paused');
     const [loading, setLoading] = useState(true);
     useEffect(() => {
         (async () => {
             try{
-                const { status, data } = await apiRequest(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/player/${playerId}/tracks/current`, {
+                const { data } = await apiRequest(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/player/${playerId}/tracks/queue/current`, {
                     method: 'GET',
                     cache: 'no-cache'
                 }, ResponseDataType.JSON)
-                if(data.status != 'ok') return setData(null)
-                const queueTrackResp = data as QueueTrackResponse
-                return setData(queueTrackResp.queueTrack)
+                const { status, queueTrack, playerStatus } = data as QueueTrackResponse
+                if(status != 'ok') return setData(null)
+                setStatus(playerStatus)
+                return setData(queueTrack)
             }catch(err){
                 setData(null)
             }finally{
@@ -38,7 +44,7 @@ export function useCurrentTrack(playerId: string){
             }
         })()
     }, [playerId])
-    return ({ data, setData, loading })
+    return ({ data, setData, status, setStatus, loading })
 }
 
 export function usePlayerQueue(playerId: string){
@@ -47,7 +53,7 @@ export function usePlayerQueue(playerId: string){
     useEffect(() => {
         (async () => {
             try{
-                const { status, data } = await apiRequest(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/player/${playerId}/tracks/`, {
+                const { status, data } = await apiRequest(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/player/${playerId}/tracks/queue/`, {
                     method: 'GET',
                     cache: 'no-cache'
                 }, ResponseDataType.JSON)
