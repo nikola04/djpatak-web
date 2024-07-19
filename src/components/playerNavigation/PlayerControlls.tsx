@@ -62,7 +62,8 @@ function TrackUser({ loading, data }: {
     if(loading) return <TrackSceleton/>
     if(data) return <div className="grid gap-3 w-64 overflow-hidden" style={{ gridTemplateColumns: "auto 1fr"}}>
         <div className="w-12 h-12 rounded overflow-hidden">
-            <img src={data.track.thumbnail} width={48} height={48}/>
+            { data.track.thumbnail ? <img alt="Track Thumbnail" src={data.track.thumbnail} width={48} height={48}/>
+            : <div className="w-full h-full bg-black-light"></div> }
         </div>
         <div className="text-white-gray w-48 flex flex-col justify-around">
             <a href={data.track.permalink} title={data.track.title} target="_blank" className="font-bold text-ellipsis text-nowrap overflow-hidden hover:underline leading-3 text-base">{data.track.title}</a>

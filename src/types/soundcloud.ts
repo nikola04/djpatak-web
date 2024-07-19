@@ -2,13 +2,13 @@ export type Track = {
     id: number
     title: string
     permalink: string
-    thumbnail: string
+    thumbnail?: string
     duration: number
     user: {
         id: number
         username: string
         permalink: string
-        thumbnail: string
+        thumbnail?: string
     }
     formats: any[]
 }
