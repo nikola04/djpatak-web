@@ -12,6 +12,9 @@ const config: Config = {
           '50%': { transform: 'translateX(3px)' },
         }
       },
+      scale: {
+        '102': '1.02'
+      },
       animation: {
         shakeX: "shakeX .25s ease-in"
       },

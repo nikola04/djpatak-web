@@ -8,18 +8,7 @@ import { GoDotFill } from "react-icons/go";
 import { PiQueue } from "react-icons/pi";
 import { MdOutlinePlaylistAdd } from "react-icons/md";
 import { IconType } from "react-icons";
-
-
-function formatDuration(seconds: number): string{
-    const twoDigits = (num: number): string => num < 10 ? `0${num}` : `${num}`
-    if(seconds < 60) return `0:${twoDigits(seconds)}`
-    // Minutes
-    const minutes = Math.floor(seconds / 60)
-    if(minutes < 60) return `${twoDigits(minutes)}:${twoDigits(seconds % 60)}`
-    // Hours
-    const hours = Math.floor(minutes / 60)
-    return `${hours}:${twoDigits(minutes % 60)}:${twoDigits(seconds % 60)}`
-}
+import { formatDuration } from "@/utils/tracks";
 
 const tracksLimit = 12
 

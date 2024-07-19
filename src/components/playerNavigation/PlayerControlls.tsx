@@ -1,7 +1,7 @@
 'use client'
 import { QueueTrack } from "@/types/soundcloud";
 import apiRequest, { ResponseDataType } from "@/utils/apiRequest";
-import { useCurrentTrack } from "@/utils/frontend";
+import { useCurrentTrack } from "@/utils/tracks";
 import { socketEventHandler, useSockets } from "@/utils/sockets";
 import { CSSProperties, useEffect } from "react";
 import { IconType } from "react-icons";
@@ -35,13 +35,11 @@ export default function PlayerControlls({ className, guildId }: {
     const { loading, data, setData } = useCurrentTrack(guildId)
     const { socket, ready } = useSockets()
     useEffect(() => {
-        if(!socket || !ready) return
+        if(!ready) return
         const handler = new socketEventHandler(socket, guildId)
-        handler.subscribe('now-playing', (track: QueueTrack) => {
-            console.log(track)
-            setData(track)
-        })
-    }, [socket, ready, guildId])
+        handler.subscribe('now-playing', (track) => setData(track))
+        return () => handler.destroy()
+    }, [ready, socket, guildId])
     if(data) 
         return <div className={`${className} flex bg-black-default z-10 shadow-md items-center px-4`}  style={{ height: "80px" }}>
             <div className="flex items-center gap-7">

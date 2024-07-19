@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import apiRequest, { ResponseDataType } from "./apiRequest";
-import { QueueTrack } from "@/types/soundcloud";
 import { DiscordGuild } from "@/types/discord";
 
 export function isParentOf(parent: HTMLElement|null, node: HTMLElement|ParentNode|null): boolean{
@@ -8,34 +7,6 @@ export function isParentOf(parent: HTMLElement|null, node: HTMLElement|ParentNod
     if(!node) return false;
     if(node == parent) return true;
     return isParentOf(parent, node.parentNode);
-}
-
-export type QueueTrackResponse = {
-    status: string,
-    queueTrack: QueueTrack
-}
-
-export function useCurrentTrack(playerId: string){
-    const [data, setData] = useState<QueueTrack|null>(null);
-    const [loading, setLoading] = useState(true);
-    useEffect(() => {
-        (async () => {
-            try{
-                const { status, data } = await apiRequest(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/player/${playerId}/tracks/current`, {
-                    method: 'GET',
-                    cache: 'no-cache'
-                }, ResponseDataType.JSON)
-                if(data.status != 'ok') return setData(null)
-                const queueTrackResp = data as QueueTrackResponse
-                return setData(queueTrackResp.queueTrack)
-            }catch(err){
-                setData(null)
-            }finally{
-                setLoading(false)
-            }
-        })()
-    }, [])
-    return ({ data, setData, loading })
 }
 
 export function useUserGuilds(){
@@ -61,7 +32,7 @@ export function useUserData() {
     useEffect(() => {
       const fetchData = async () => {
         try {
-            const { status, data, error } = await apiRequest(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/me`, {
+            const { status, data } = await apiRequest(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/me`, {
                 method: 'GET',
                 cache: 'no-cache'
             }, ResponseDataType.JSON)

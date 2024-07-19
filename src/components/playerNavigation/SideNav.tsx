@@ -7,7 +7,6 @@ import { IoRadioSharp } from "react-icons/io5";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { DiscordGuild } from "@/types/discord";
-import apiRequest, { ResponseDataType } from "@/utils/apiRequest";
 import { isParentOf, useUserGuilds } from "@/utils/frontend";
 import { useRouter } from "next/navigation";
 import { FaHeart } from "react-icons/fa6";
