@@ -1,29 +1,38 @@
 'use client'
 
-import { QueueTrack, Track } from "@/types/soundcloud";
-import { formatDuration, playTrackByQueueId, useCurrentTrack, usePlayerQueue } from "@/utils/tracks";
+import { QueueTrack, Track } from "../../../../types/soundcloud";
+import { formatDuration, playTrackByQueueId, removeTrackByQueueId, useCurrentTrack, usePlayerQueue } from "@/utils/tracks";
 import { socketEventHandler, useSockets } from "@/utils/sockets";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import * as audioWaveData from './lottie-audiwave.json'
+import { TfiTrash } from "react-icons/tfi";
 import { FaPlay } from "react-icons/fa";
 import { GoDotFill } from "react-icons/go";
-import { GiSoundWaves } from "react-icons/gi";
 import { useAlert } from "@/components/Alert";
+import { resume } from "@/utils/controlls";
+import { AnimationItem } from "lottie-web";
 
 export default function Home({ params: { id }}: {
     params: {
         id: string
     }
 }) {
-    const { data: track, setData: setTrack, loading: trackLoading } = useCurrentTrack(id)
+    const { data: track, setData: setTrack, status, setStatus, loading: trackLoading } = useCurrentTrack(id)
     const { data: queue, setData: setQueue, loading: queueLoading } = usePlayerQueue(id)
     const { socket, ready } = useSockets()
     const { pushAlert } = useAlert()
     useEffect(() => {
         if(!ready) return
         const handler = new socketEventHandler(socket, id)
-        handler.subscribe('now-playing', (track) => setTrack(track))
-        handler.subscribe('queue-end', () => setTrack(null))
+        handler.subscribe('now-playing', (track: QueueTrack) => {
+            setTrack(track); setStatus('playing');
+        })
         handler.subscribe('new-queue-song', (track: QueueTrack) => setQueue(prev => [...prev, track]))
+        handler.subscribe('queue-end', () => {
+            setTrack(null); setStatus('paused');
+        })
+        handler.subscribe('pause', () => setStatus('paused'))
+        handler.subscribe('resume', () => setStatus('playing'))
         return () => handler.destroy()
     }, [ready, socket, id])
     const playTrack = async (track: QueueTrack) => {
@@ -35,23 +44,47 @@ export default function Home({ params: { id }}: {
             console.error(err)
         }
     }
-    return <div className="flex px-3 py-6 gap-10">
+    const resumeTrack = async () => {
+        try{
+            await resume(id)
+            setStatus('playing')
+        }catch(err){
+            pushAlert(String(err))
+            console.error(err)
+        }
+    }
+    const deleteTrack = async (track: QueueTrack) => {
+        try{
+            await removeTrackByQueueId(id, track.queueId)
+            setQueue((queue) => queue.filter((queueTrack) => queueTrack.queueId !== track.queueId))
+        }catch(err){
+            pushAlert(String(err))
+            console.error(err)
+        }
+    }
+    return <div className="flex w-full flex-col items-center lg:items-start lg:flex-row px-3 py-6 gap-5 xl:gap-10" style={{ gridTemplateColumns: 'auto 1fr' }}>
         <TrackHeader loading={trackLoading} track={track?.track}/>
-        <div className="flex flex-col p-2">
-            <PlayerQueue queue={queue} onPlay={playTrack} currentTrack={track} loading={queueLoading} />
+        <div className="w-full lg:w-auto flex-col p-2 flex-grow">
+            { !queueLoading && queue.length == 0 ? <div>
+                <p className="text-white-default">No tracks. You should start searching.</p>
+            </div>
+            : <PlayerQueue status={status} queue={queue} onResume={resumeTrack} onPlay={playTrack} onDelete={deleteTrack} currentTrack={track} loading={queueLoading} /> }
         </div>
   </div>;
 }
 
-function PlayerQueue({ queue, onPlay, loading, currentTrack }: {
+function PlayerQueue({ queue, status, onPlay, onResume, onDelete, loading, currentTrack }: {
     queue: QueueTrack[],
-    onPlay: (track: QueueTrack) => any,
+    status: 'playing'|'paused'
+    onPlay: (track: QueueTrack) => void,
+    onResume: () => void,
+    onDelete: (track: QueueTrack) => void,
     loading: boolean,
     currentTrack: QueueTrack|null
 }){
     if(loading) 
         return [...new Array(10)].map((val, ind) => <PlayerQueueTrackSceleton key={ind} /> )
-    return queue.map((track, ind) => <PlayerQueueTrack track={track} key={ind} onPlay={() => onPlay(track)} current={track.queueId == currentTrack?.queueId}/>)
+    return queue.map((track, ind) => <PlayerQueueTrack isPaused={status === 'paused'} track={track} key={ind} onResume={() => onResume()} onPlay={() => onPlay(track)} onDelete={() => onDelete(track)} current={track.queueId == currentTrack?.queueId}/>)
 }
 function PlayerQueueTrackSceleton(){
     return <div className="flex w-full p-2 my-0.5">
@@ -66,29 +99,59 @@ function PlayerQueueTrackSceleton(){
     </div>
 }
 
-function PlayerQueueTrack({ track, onPlay, current }: {
+function PlayerQueueTrack({ track, isPaused, onPlay, onResume, onDelete, current }: {
     track: QueueTrack,
-    onPlay: () => any,
+    isPaused: boolean,
+    onPlay: () => void,
+    onDelete: () => void,
+    onResume: () => void,
     current: boolean
 }){
-    return <div className="group flex justify-between w-full p-2 my-0.5 rounded-lg transition-all hover:bg-white-hover hover:shadow-lg">
-        <div className="flex">
-            <div onClick={() => !current && onPlay()} className="relative rounded overflow-hidden bg-black-light cursor-pointer select-none" style={{ width: "48px", height: "48px" }}>
-                { track.track.thumbnail && <img width={48} height={48} src={track.track.thumbnail} className="rounded group-hover:opacity-65 transition-all duration-200" alt="Track Thumbnail" /> }
+    const soundwaveBox = useRef(null)
+    const lottie = useRef<AnimationItem|null>(null);
+    useEffect(() => {
+        let stop = false
+        async function getLottie() {
+            const importedLottie = await import("lottie-web");
+            if(stop) return;
+            lottie.current = importedLottie.default.loadAnimation({
+                autoplay: true,
+                loop: true,
+                animationData: audioWaveData,
+                container: soundwaveBox.current!
+            })
+            lottie.current.setSpeed(0.85)
+        }
+        getLottie()
+        return () => {
+            if(lottie.current)
+                lottie.current.destroy();
+            else stop = true
+        }
+    })
+    return <div className={`group flex justify-between w-full p-2 my-0.5 rounded-lg transition-all ${ !current ? 'hover:bg-white-hover hover:shadow-lg' : 'bg-blue-light bg-opacity-15' }`}>
+        <div className="flex w-full">
+            <div onClick={() => isPaused && current ? onResume() : onPlay()} className="relative rounded overflow-hidden bg-black-light select-none cursor-pointer flex-shrink-0" style={{ width: "48px", height: "48px", flexBasis: "48px" }}>
+                { track.track.thumbnail && <img width={48} height={48} src={track.track.thumbnail} className={`rounded transition-all duration-200" alt="Track Thumbnail ${ !current ? 'group-hover:opacity-65' : 'opacity-65' }`} /> }
                 <div className={`absolute z-10 top-0 left-0 w-full h-full flex items-center justify-center transition-all duration-200 ${!current && "opacity-0 group-hover:opacity-90"}`}>
-                    <div className="flex bg-black-default rounded-full w-11/12 aspect-square items-center justify-center">
-                        { !current ? <FaPlay className="text-white-default text-lg"/>
-                        : <GiSoundWaves className="text-white-default text-lg"/>}
+                    <div className="flex bg-blue-light rounded-full w-10/12 aspect-square items-center justify-center">
+                        { (!current || isPaused) && <FaPlay className="text-white-default text-lg ml-1"/> }
+                        <div className={`p-0.5 pl-1 hidden ${current && !isPaused && '!block'}`} ref={soundwaveBox}></div>
                     </div>
                 </div>
             </div>
-            <div className="flex flex-col pl-2.5 justify-around">
-                <p title={track.track.title} className="text-white-gray text-base font-bold text-nowrap text-ellipsis overflow-hidden max-w-md w-full">{ track.track.title }</p>
+            <div className="flex flex-col pl-2.5 justify-around w-[280] flex-grow flex-shrink" style={{ flexBasis: "280px" }}>
+                <p title={track.track.title} className="text-white-gray text-base font-bold text-nowrap whitespace-nowrap text-ellipsis overflow-hidden">{ track.track.title }</p>
                 <div className="flex text-sm items-center text-white-gray gap-1">
                     <a title={`SoundCloud: ${track.track.user.username}`} href={track.track.user.permalink} target="_blank" className="hover:underline">{ track.track.user.username }</a>
                     <DotSeparator/>
                     <p className="">{ formatDuration(Math.ceil(track.track.duration / 1000)) }</p>
                 </div>
+            </div>
+            <div className="flex items-center justify-center">
+                <button title={"Remove Song"} onClick={() => onDelete()} className="hover:bg-white-hover active:bg-white-active w-10 h-10 flex items-center justify-center rounded-full transition-all duration-150">
+                    <TfiTrash className="text-white-gray text-lg"/>
+                </button>
             </div>
         </div>
     </div>
@@ -103,7 +166,7 @@ function TrackHeader({ track, loading }: {
     if(loading) return <TrackHeaderSceleton/>
     if(!track) return null
     if(track.thumbnail) track.thumbnail = track.thumbnail.replace('-large', '-t500x500')
-    return <div className="p-2 w-80">
+    return <div className="p-2 w-full lg:max-w-64 xl:max-w-80 max-w-80">
         <div className="w-full overflow-hidden rounded hover:shadow-lg transition-all duration-200 bg-black-light">
             { track.thumbnail ? <img src={track.thumbnail} alt="Track Banner" className="min-w-full aspect-square"/> 
             : <div className="min-w-full aspect-square"></div> }

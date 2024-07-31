@@ -1,4 +1,4 @@
-import { DiscordGuild } from "@/types/discord"
+import { DiscordGuild } from "../../../types/discord"
 import { CSSProperties } from "react"
 
 export function GuildIcon({ guild, size, style, styleNoImage, styleWithImage, className, classNameNoImage, classNameWithImage }:{

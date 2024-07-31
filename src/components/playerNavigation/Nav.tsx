@@ -1,9 +1,9 @@
 "use client"
 import { FormEvent, useState } from "react";
 import NavProfileMenu from "./ProfileMenu";
-import DiscordButton from '../button/DiscordSignIn';
+import DiscordButton from '../discord/DiscordSignIn';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useUserData } from "@/utils/frontend";
+import { useUserData } from "@/utils/user";
 import apiRequest, { ResponseDataType } from "@/utils/apiRequest";
 import Link from "next/link";
 import Image from "next/image";

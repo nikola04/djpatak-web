@@ -6,8 +6,9 @@ import { BsPlusCircle } from "react-icons/bs";
 import { IoRadioSharp } from "react-icons/io5";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { DiscordGuild } from "@/types/discord";
-import { isParentOf, useUserGuilds } from "@/utils/frontend";
+import { DiscordGuild } from "../../../types/discord";
+import { useUserGuilds } from "@/utils/user";
+import { isParentOf } from '@/utils/frontend'
 import { useRouter } from "next/navigation";
 import { FaHeart } from "react-icons/fa6";
 import { GuildIcon } from "../discord/GuildIcon";

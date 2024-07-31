@@ -1,30 +1,36 @@
 'use client'
-import { QueueTrack } from "@/types/soundcloud";
+import { QueueTrack } from "../../../types/soundcloud";
 import { useCurrentTrack } from "@/utils/tracks";
 import { socketEventHandler, useSockets } from "@/utils/sockets";
-import { CSSProperties, useEffect } from "react";
+import { CSSProperties, forwardRef, Reference, useEffect, useRef, useState } from "react";
 import { IconType } from "react-icons";
 import { IoIosPlay, IoIosSkipBackward } from "react-icons/io";
 import { IoIosSkipForward } from "react-icons/io";
 import { IoIosPause } from "react-icons/io";
 import { IoIosShuffle } from "react-icons/io";
-import { IoIosRepeat } from "react-icons/io";
-import { next, pause, prev, resume } from "@/utils/controlls";
-import { useAlert } from "../Alert";
+import { PiRepeatOnce, PiRepeat } from "react-icons/pi";
+import { IoVolumeLowOutline, IoVolumeMediumOutline, IoVolumeMuteOutline } from "react-icons/io5";
 
+import { Slider } from "@nextui-org/slider";
+
+import { next, pause, prev, repeat, resume, volume as updatePlayerVolume, volume } from "@/utils/controlls";
+import { useAlert } from "@/components/Alert";
+import { Repeat } from "../../../types/player";
+import { capitilizeWord, isParentOf } from "@/utils/frontend";
 export default function PlayerControlls({ className, guildId }: {
     className: string,
     guildId: string
 }){
-    const { loading, data, setData, status, setStatus } = useCurrentTrack(guildId)
+    const { loading, data, setData, status, setStatus, playerPreferences, setPlayerPreferences } = useCurrentTrack(guildId)
     const { socket, ready } = useSockets()
     const { pushAlert } = useAlert()
     useEffect(() => {
         if(!ready) return
         const handler = new socketEventHandler(socket, guildId)
-        handler.subscribe('now-playing', (track) => {
+        handler.subscribe('now-playing', (track: QueueTrack) => {
             setData(track); setStatus('playing');
         })
+        handler.subscribe('repeat', (repeat: Repeat) => setPlayerPreferences((prev) => ({ ...prev, repeat })))
         handler.subscribe('queue-end', () => {
             setData(null); setStatus('paused');
         })
@@ -67,20 +73,127 @@ export default function PlayerControlls({ className, guildId }: {
             pushAlert(String(err))
         }
     }
+    const repeatPress = async (rep: Repeat) => {
+        try{
+            if(await repeat(guildId, rep)) setPlayerPreferences((prev) => ({ ...prev, repeat: rep }))
+        }catch(err){
+            console.error(err)
+            pushAlert(String(err))
+        }
+    }
+    const updateVolume = async (volume: number) => {
+        try{
+            if(await updatePlayerVolume(guildId, volume)) setPlayerPreferences((prev) => ({ ...prev, volume }))
+        }catch(err){
+            console.error(err)
+            pushAlert(String(err))
+        }
+    }
+    
+    useEffect(() => console.log(playerPreferences.repeat), [playerPreferences])
     if(data) 
-        return <div className={`${className} flex bg-black-default z-10 shadow-md items-center px-4`}  style={{ height: "80px" }}>
-            <div className="flex items-center gap-7">
+        return <div className={`${className} flex bg-black-default z-10 shadow-md items-center px-6`}  style={{ height: "80px" }}>
+            <div className="flex items-center gap-7 w-full">
                 <TrackUser loading={loading} data={data}/>
                 <div className="flex items-center gap-2">
-                    <PlayerButton icon={IoIosSkipBackward} onClick={playPrev} style={{ fontSize: '22px' }}/>
-                    { status == 'playing' ? <PlayerButton icon={IoIosPause} onClick={pausePress} style={{ fontSize: '28px' }}/>
-                    : <PlayerButton icon={IoIosPlay} onClick={resumePress} style={{ fontSize: '28px' }}/>}
-                    <PlayerButton icon={IoIosSkipForward} onClick={playNext} style={{ fontSize: '22px' }}/>
-                    <PlayerButton icon={IoIosRepeat} onClick={() => null} style={{ fontSize: '28px' }}/>
+                    <PlayerButton title="Play Previous" icon={IoIosSkipBackward} onClick={playPrev} style={{ fontSize: '22px' }}/>
+                    { status == 'playing' ? <PlayerButton title="Pause" icon={IoIosPause} onClick={pausePress} style={{ fontSize: '28px' }}/>
+                    : <PlayerButton title="Resume" icon={IoIosPlay} onClick={resumePress} style={{ fontSize: '28px' }}/>}
+                    <PlayerButton title="Play Next" icon={IoIosSkipForward} onClick={playNext} style={{ fontSize: '22px' }}/>
+                    <PlayerRepeatButton onClick={repeatPress} repeat={playerPreferences?.repeat} />
+                </div>
+                <div className="ml-auto">
+                    <PlayerVolumeSlider updateVolume={updateVolume} defaultVolume={playerPreferences.volume} />
                 </div>
             </div>
         </div>
     return null
+}
+
+function PlayerVolumeSlider({ updateVolume, defaultVolume }: {
+    updateVolume: (volume: number) => void,
+    defaultVolume: number
+}){
+    const [volume, setVolume] = useState<number>(defaultVolume)
+    const [showSlider, setShowSlider] = useState<boolean>(false)
+    const sliding = useRef(false)
+    const slider = useRef(null)
+    const button = useRef(null)
+    function getVolumeIcon(volume: number){
+        if(volume >= 0.5) return IoVolumeMediumOutline
+        else if(volume > 0) return IoVolumeLowOutline
+        else return IoVolumeMuteOutline
+    }
+    useEffect(() => {
+        if(!showSlider) return
+        function handleClick(e: MouseEvent){
+            if(sliding.current) return
+            if(!e.target) return
+            if(isParentOf(button.current, e.target as HTMLElement)) return
+            if(isParentOf(slider.current, e.target as HTMLElement)) return
+            setShowSlider((prev) => !prev)
+        }
+        window.addEventListener('click', handleClick)
+        return () => window.removeEventListener('click', handleClick)
+    }, [showSlider])
+    return <div className="relative">
+        { showSlider && <div className="absolute z-60 w-10 h-36 flex items-center justify-center py-5 bg-black-light rounded-md bottom-[105%] left-[50%]" style={{ transform: 'translateX(-50%)'}}>
+            <Slider
+                ref={slider}
+                aria-label="Volume"
+                size="sm"
+                color="secondary"
+                step={0.01} 
+                maxValue={1} 
+                minValue={0} 
+                orientation="vertical"
+                value={volume}
+                onChange={(vol) => {
+                    sliding.current = true
+                    setVolume(vol as number)
+                }}
+                onChangeEnd={() => {
+                    updateVolume(volume)
+                    setTimeout(() => sliding.current = false, 25)
+                }}
+                classNames={{
+                    thumb: "bg-blue-light border-s-black-light",
+                    trackWrapper: "bg-black-light",
+                    filler: "bg-blue-light",
+                    track: "border-b-blue-light border-y-1.5"
+                }}
+                renderThumb={(props) => (
+                    <div
+                      {...props}
+                      className="group p-0.5 top-1/2 left-1/2 bg-blue-light shadow-medium rounded-full cursor-grab data-[dragging=true]:cursor-grabbing"
+                    >
+                      <span className="transition-transform bg-black-default rounded-full w-3 h-3 block group-data-[dragging=true]:scale-80" />
+                    </div>
+                  )}
+            />
+        </div> }
+        <PlayerButton ref={button} title="volume" icon={getVolumeIcon(volume)} onClick={() => setShowSlider((prev) => !prev)} style={{ fontSize: volume === 0 ? '24px' : '26px'}} active={false}/>
+    </div>
+}
+
+function PlayerRepeatButton({ repeat, onClick }: {
+    repeat?: Repeat,
+    onClick: (repeat: Repeat) => void
+}){
+    function nextRepeat(): Repeat{
+        if(repeat == 'off') return 'track'
+        if(repeat == 'track') return 'queue'
+        if(repeat == 'queue') return 'off'
+        return 'off'
+    }
+    function onRepeatClick(){
+        return onClick(nextRepeat())
+    }
+    if(repeat == null) return null
+    return <div className="flex items-center justify-center relative">
+        <PlayerButton title={`Repeat ${capitilizeWord(String(nextRepeat()))}`} icon={repeat === 'track' ? PiRepeatOnce : PiRepeat} active={repeat != 'off'} onClick={() => onRepeatClick()} style={{ fontSize: '24px' }}/>
+        { repeat === 'queue' && <div className="absolute w-1 h-1 rounded-full bg-blue-light transition-all"></div> }
+    </div>
 }
 
 function TrackUser({ loading, data }: {
@@ -111,13 +224,16 @@ function TrackSceleton(){
     </div>
 }
 
-function PlayerButton({ icon, onClick, style }: {
+const PlayerButton = forwardRef<HTMLButtonElement, {
+    title: string,
     icon: IconType,
     onClick: () => void,
-    style: CSSProperties
-}){
+    style: CSSProperties,
+    active?: boolean
+}>(({ title, icon, onClick, style, active }, ref) => {
     const Icon = icon
-    return <button onClick={() => onClick()} className="hover:bg-white-hover active:bg-white-active w-11 h-11 flex items-center justify-center rounded-full transition-all duration-150">
-        <Icon className={"text-white-gray"} style={style} />
+    return <button ref={ref} title={title} onClick={() => onClick()} className="hover:bg-white-hover active:bg-white-active w-11 h-11 flex items-center justify-center rounded-full transition-all duration-150">
+        <Icon className={active ? "text-blue-light transition-all" : "text-white-gray transition-all"} style={style} />
     </button>
-}
+})
+PlayerButton.displayName = 'PlayerButton';

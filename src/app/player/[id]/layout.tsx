@@ -24,10 +24,10 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={nunitoFont.className}>
+      <body className={`${nunitoFont.className} dark`}>
         <Providers>
           <div className="w-screen h-screen bg-blue bg-black-default">
-              <div className="relative w-screen h-screen grid gap-x-8" style={{ gridTemplateRows: "auto 1fr auto", gridTemplateColumns: "auto 1fr" }}>
+              <div className="relative w-screen h-screen grid xl:gap-x-8" style={{ gridTemplateRows: "auto 1fr auto", gridTemplateColumns: "auto 1fr" }}>
                 <NavLogo/>
                 <Nav guildId={id} />
                 <SideNav guildId={id} allowedMenuGroups={[ "guildSelector", "library", "player"]} />

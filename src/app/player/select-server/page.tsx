@@ -1,8 +1,8 @@
 'use client'
 
 import { GuildIcon } from "@/components/discord/GuildIcon";
-import { DiscordGuild } from "@/types/discord";
-import { useUserGuilds } from "@/utils/frontend";
+import { DiscordGuild } from "../../../../types/discord";
+import { useUserGuilds } from "@/utils/user";
 import { useRouter } from "next/navigation";
 
 export default function Home() {

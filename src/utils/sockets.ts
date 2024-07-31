@@ -1,7 +1,8 @@
 'use client'
 import { useEffect, useState } from "react";
 import Cookies from 'js-cookie'
-import { QueueTrack } from "@/types/soundcloud";
+import { QueueTrack } from "../../types/soundcloud";
+import { Repeat } from "../../types/player";
 
 let ws: WebSocket|null = null
 
@@ -41,7 +42,7 @@ export function useSockets(){
 }
 
 
-type EventType = 'now-playing'|'new-queue-song'|'queue-end'|'pause'|'resume'
+type EventType = 'now-playing'|'new-queue-song'|'queue-end'|'pause'|'resume'|'repeat'
 export class socketEventHandler{
     private eventsMap: Map<EventType, (data?: any) => any>
     private socket: WebSocket
@@ -70,7 +71,8 @@ export class socketEventHandler{
         }))
     }
     public subscribe(ev: 'now-playing'|'new-queue-song', handler: (track: QueueTrack) => any): void;
-    public subscribe(ev: Exclude<EventType, 'now-playing'|'new-queue-song'>, handler: () => any): void;
+    public subscribe(ev: 'repeat', handler: (repeat: Repeat) => any): void;
+    public subscribe(ev: Exclude<EventType, 'now-playing'|'new-queue-song'|'repeat'>, handler: () => any): void;
     public subscribe(ev: EventType, handler: (arg?: any) => any){
         this.eventsMap.set(ev, handler)
     }

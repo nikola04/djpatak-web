@@ -1,6 +1,7 @@
-import { QueueTrack } from "@/types/soundcloud";
+import { QueueTrack } from "../../types/soundcloud";
 import { useEffect, useState } from "react";
 import apiRequest, { QueueTrackResponse, ResponseDataType } from "./apiRequest";
+import { playerPreferences } from "../../types/player";
 
 export function formatDuration(seconds: number): string{
     const twoDigits = (num: number): string => num < 10 ? `0${num}` : `${num}`
@@ -21,9 +22,24 @@ export async function playTrackByQueueId(playerId: string, queueId: string){
     if(data.status == 'ok') return true
     throw data.error
 }
+export async function removeTrackByQueueId(playerId: string, queueId: string){
+    const url = new URL(`${process.env.NEXT_PUBLIC_API_URL!}/api/v1/player/${playerId}/tracks/queue/${encodeURIComponent(queueId)}`)
+    const { data } = await apiRequest(url.href, {
+        method: 'DELETE',
+    }, ResponseDataType.JSON)
+    if(data.status == 'ok') return true
+    throw data.error
+}
 
+function initDefaultPlayerPreferences(): playerPreferences{
+    return ({
+        repeat: 'off',
+        volume: 1
+    })
+}
 export function useCurrentTrack(playerId: string){
     const [data, setData] = useState<QueueTrack|null>(null);
+    const [playerPreferences, setPlayerPreferences] = useState<playerPreferences>(initDefaultPlayerPreferences());
     const [status, setStatus] = useState<'playing'|'paused'>('paused');
     const [loading, setLoading] = useState(true);
     useEffect(() => {
@@ -33,9 +49,11 @@ export function useCurrentTrack(playerId: string){
                     method: 'GET',
                     cache: 'no-cache'
                 }, ResponseDataType.JSON)
-                const { status, queueTrack, playerStatus } = data as QueueTrackResponse
-                if(status != 'ok') return setData(null)
+                const { status, queueTrack, playerStatus, playerPreferences } = data as QueueTrackResponse
+                if(status != 'ok') throw 'No Data'
                 setStatus(playerStatus)
+                if(playerPreferences)
+                    setPlayerPreferences((prev) => ({ ...prev, playerPreferences }))
                 return setData(queueTrack)
             }catch(err){
                 setData(null)
@@ -44,7 +62,7 @@ export function useCurrentTrack(playerId: string){
             }
         })()
     }, [playerId])
-    return ({ data, setData, status, setStatus, loading })
+    return ({ data, setData, status, setStatus, playerPreferences, setPlayerPreferences, loading })
 }
 
 export function usePlayerQueue(playerId: string){
