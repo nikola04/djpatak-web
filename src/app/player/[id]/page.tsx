@@ -67,6 +67,7 @@ export default function Home({ params: { id }}: {
     const onTrackLike = async (track: Track) => {
         try{
             await likeTrack(track.permalink, 'soundcloud')
+            track.isLiked = true
             return
         }catch(err){
             pushAlert(String(err))
@@ -76,6 +77,7 @@ export default function Home({ params: { id }}: {
     const onTrackDislike = async (track: Track) => {
         try{
             await dislikeTrack(track.permalink, 'soundcloud')
+            track.isLiked = false
             return
         }catch(err){
             pushAlert(String(err))

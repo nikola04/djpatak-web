@@ -4,7 +4,6 @@ import { GuildIcon } from "@/components/discord/GuildIcon";
 import { DiscordGuild } from "../../../../types/discord";
 import { useUserGuilds } from "@/utils/user";
 import { useRouter } from "next/navigation";
-import { IoOpenOutline } from "react-icons/io5";
 
 export default function Home() {
     const { loading, data } = useUserGuilds()

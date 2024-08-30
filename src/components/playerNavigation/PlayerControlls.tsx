@@ -120,24 +120,25 @@ export default function PlayerControlls({ className, guildId }: {
     }, [data])
     
     useEffect(() => console.log(playerPreferences.repeat), [playerPreferences])
-    if(data) 
-        return <div className={`${className} flex bg-black-default z-10 shadow-md items-center px-6`}  style={{ height: "80px" }}>
-            <div className="flex items-center gap-7 w-full">
-                <TrackUser loading={loading} data={data}/>
-                <div className="flex items-center gap-2">
-                    <PlayerButton title="Play Previous" icon={IoIosSkipBackward} onClick={playPrev} style={{ fontSize: '22px' }}/>
-                    { status == 'playing' ? <PlayerButton title="Pause" icon={IoIosPause} onClick={pausePress} style={{ fontSize: '28px' }}/>
-                    : <PlayerButton title="Resume" icon={IoIosPlay} onClick={resumePress} style={{ fontSize: '28px' }}/>}
-                    <PlayerButton title="Play Next" icon={IoIosSkipForward} onClick={playNext} style={{ fontSize: '22px' }}/>
-                    <PlayerRepeatButton onClick={repeatPress} repeat={playerPreferences?.repeat} />
-                </div>
-                <div className="ml-auto flex items-center">
-                    <SmallIconButton title="Like Song" iconClass="text-xl" icon={FaRegHeart} activeIcon={FaHeart} onClick={() => likeTrackClick()} isActive={data.track.isLiked}/>
-                    <PlayerVolumeSlider updateVolume={updateVolume} defaultVolume={playerPreferences.volume} />
-                </div>
+    if(!data)
+        return null
+
+    return <div className={`${className} flex bg-black-default z-10 shadow-md items-center px-6`}  style={{ height: "80px" }}>
+        <div className="flex items-center gap-7 w-full">
+            <TrackUser loading={loading} data={data}/>
+            <div className="flex items-center gap-2">
+                <PlayerButton title="Play Previous" icon={IoIosSkipBackward} onClick={playPrev} style={{ fontSize: '22px' }}/>
+                { status == 'playing' ? <PlayerButton title="Pause" icon={IoIosPause} onClick={pausePress} style={{ fontSize: '28px' }}/>
+                : <PlayerButton title="Resume" icon={IoIosPlay} onClick={resumePress} style={{ fontSize: '28px' }}/>}
+                <PlayerButton title="Play Next" icon={IoIosSkipForward} onClick={playNext} style={{ fontSize: '22px' }}/>
+                <PlayerRepeatButton onClick={repeatPress} repeat={playerPreferences?.repeat} />
+            </div>
+            <div className="ml-auto flex items-center">
+                <SmallIconButton title="Like Song" iconClass="text-xl" icon={FaRegHeart} activeIcon={FaHeart} onClick={() => likeTrackClick()} isActive={data.track.isLiked}/>
+                <PlayerVolumeSlider updateVolume={updateVolume} defaultVolume={playerPreferences.volume} />
             </div>
         </div>
-    return null
+    </div>
 }
 
 function PlayerVolumeSlider({ updateVolume, defaultVolume }: {

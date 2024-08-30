@@ -65,7 +65,7 @@ export default function SideNav({ guildId, allowedMenuGroups }: Readonly<{
     useEffect(() => {
         if(!loading){
             if(!userGuilds.some(({ id }) => id == guildId)) 
-                router.push('/player/select-server')
+                return //router.push('/player/select-server')
         }
     }, [loading, userGuilds, guildId, router])
     const pathname = usePathname()
