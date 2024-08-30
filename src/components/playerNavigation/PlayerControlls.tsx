@@ -1,8 +1,8 @@
 'use client'
-import { QueueTrack } from "../../../types/soundcloud";
-import { useCurrentTrack } from "@/utils/tracks";
+import { QueueTrack, Track } from "../../../types/soundcloud";
+import { dislikeTrack, likeTrack, useCurrentTrack } from "@/utils/tracks";
 import { socketEventHandler, useSockets } from "@/utils/sockets";
-import { CSSProperties, forwardRef, Reference, useEffect, useRef, useState } from "react";
+import { CSSProperties, forwardRef, Reference, useCallback, useEffect, useRef, useState } from "react";
 import { IconType } from "react-icons";
 import { IoIosPlay, IoIosSkipBackward } from "react-icons/io";
 import { IoIosSkipForward } from "react-icons/io";
@@ -17,6 +17,8 @@ import { next, pause, prev, repeat, resume, volume as updatePlayerVolume, volume
 import { useAlert } from "@/components/Alert";
 import { Repeat } from "../../../types/player";
 import { capitilizeWord, isParentOf } from "@/utils/frontend";
+import { SmallIconButton } from "../Buttons";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
 export default function PlayerControlls({ className, guildId }: {
     className: string,
     guildId: string
@@ -89,6 +91,33 @@ export default function PlayerControlls({ className, guildId }: {
             pushAlert(String(err))
         }
     }
+    const onTrackLike = async (track: Track) => {
+        try{
+            await likeTrack(track.permalink, 'soundcloud')
+            return
+        }catch(err){
+            pushAlert(String(err))
+            console.error(err)
+        }
+    }
+    const onTrackDislike = async (track: Track) => {
+        try{
+            await dislikeTrack(track.permalink, 'soundcloud')
+            return
+        }catch(err){
+            pushAlert(String(err))
+            console.error(err)
+        }
+    }
+    const likeTrackClick = useCallback(async () => {
+        if(!data?.track) return
+        if(data.track.isLiked) {
+            onTrackDislike(data.track)
+            return data.track.isLiked = false
+        }
+        onTrackLike(data.track)
+        data.track.isLiked = true
+    }, [data])
     
     useEffect(() => console.log(playerPreferences.repeat), [playerPreferences])
     if(data) 
@@ -102,7 +131,8 @@ export default function PlayerControlls({ className, guildId }: {
                     <PlayerButton title="Play Next" icon={IoIosSkipForward} onClick={playNext} style={{ fontSize: '22px' }}/>
                     <PlayerRepeatButton onClick={repeatPress} repeat={playerPreferences?.repeat} />
                 </div>
-                <div className="ml-auto">
+                <div className="ml-auto flex items-center">
+                    <SmallIconButton title="Like Song" iconClass="text-xl" icon={FaRegHeart} activeIcon={FaHeart} onClick={() => likeTrackClick()} isActive={data.track.isLiked}/>
                     <PlayerVolumeSlider updateVolume={updateVolume} defaultVolume={playerPreferences.volume} />
                 </div>
             </div>

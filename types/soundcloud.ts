@@ -3,7 +3,8 @@ export type Track = {
     title: string
     permalink: string
     thumbnail?: string
-    duration: number
+    duration: number,
+    isLiked?: boolean,
     user: {
         id: number
         username: string

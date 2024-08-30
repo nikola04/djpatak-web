@@ -41,12 +41,13 @@ const attemptRequest = async (input: string | URL, attempt: number, useCooldown?
         try{
             if(res.status == 429 && useCooldown){
                 const cooldown = (await res.json())?.retry_after;
+                console.log(cooldown)
                 if(cooldown) 
                     return await new Promise((res, rej) => setTimeout(async () => {
                         res(await attemptRequest(input, attempt + 1, useCooldown, responseType, init))
                     }, Number(cooldown) + 5))
             }
-            if(res.status == 429 && attempt < 3)
+            if(res.status == 429 && attempt < 4)
                 return await new Promise((res, rej) => setTimeout(async () => {
                     res(await attemptRequest(input, attempt + 1, useCooldown, responseType, init))
                 }, attempt * 100))

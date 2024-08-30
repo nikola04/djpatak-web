@@ -40,7 +40,10 @@ const config: Config = {
         },
         gray: "#3e3e43",
         blue: {
-          light: "#7e7ef0"
+          sky: "#9c9cf7",
+          light: "#7e7ef0",
+          dark: "#1e1e2a",
+          grayish: "#1f1f27"
         }
       },
       backgroundColor: {
@@ -56,7 +59,9 @@ const config: Config = {
         },
         blue: {
           sky: "#9c9cf7",
-          light: "#7e7ef0"
+          light: "#7e7ef0",
+          dark: "#1e1e2a",
+          grayish: "#1f1f27"
         }
       },
       ringColor: {

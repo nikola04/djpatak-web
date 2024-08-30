@@ -1,16 +1,18 @@
 'use client'
 
 import { QueueTrack, Track } from "../../../../types/soundcloud";
-import { formatDuration, playTrackByQueueId, removeTrackByQueueId, useCurrentTrack, usePlayerQueue } from "@/utils/tracks";
+import { dislikeTrack, formatDuration, likeTrack, playTrackByQueueId, removeTrackByQueueId, useCurrentTrack, usePlayerQueue } from "@/utils/tracks";
 import { socketEventHandler, useSockets } from "@/utils/sockets";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import * as audioWaveData from './lottie-audiwave.json'
 import { TfiTrash } from "react-icons/tfi";
 import { FaPlay } from "react-icons/fa";
-import { GoDotFill } from "react-icons/go";
 import { useAlert } from "@/components/Alert";
 import { resume } from "@/utils/controlls";
 import { AnimationItem } from "lottie-web";
+import { SmallIconButton } from "@/components/Buttons";
+import { FaHeart, FaRegHeart } from "react-icons/fa6";
+import { DotSeparator } from "@/components/library/tracksList";
 
 export default function Home({ params: { id }}: {
     params: {
@@ -62,8 +64,26 @@ export default function Home({ params: { id }}: {
             console.error(err)
         }
     }
-    return <div className="flex w-full flex-col items-center lg:items-start lg:flex-row px-3 py-6 gap-5 xl:gap-10" style={{ gridTemplateColumns: 'auto 1fr' }}>
-        <TrackHeader loading={trackLoading} track={track?.track}/>
+    const onTrackLike = async (track: Track) => {
+        try{
+            await likeTrack(track.permalink, 'soundcloud')
+            return
+        }catch(err){
+            pushAlert(String(err))
+            console.error(err)
+        }
+    }
+    const onTrackDislike = async (track: Track) => {
+        try{
+            await dislikeTrack(track.permalink, 'soundcloud')
+            return
+        }catch(err){
+            pushAlert(String(err))
+            console.error(err)
+        }
+    }
+    return <div className="flex w-full flex-col items-center lg:items-start lg:flex-row px-3 py-5 gap-5 xl:gap-10" style={{ gridTemplateColumns: 'auto 1fr' }}>
+        <TrackHeader loading={trackLoading} track={track?.track} onTrackLike={onTrackLike} onTrackDislike={onTrackDislike}/>
         <div className="w-full lg:w-auto flex-col p-2 flex-grow">
             { !queueLoading && queue.length == 0 ? <div>
                 <p className="text-white-default">No tracks. You should start searching.</p>
@@ -128,8 +148,8 @@ function PlayerQueueTrack({ track, isPaused, onPlay, onResume, onDelete, current
                 lottie.current.destroy();
             else stop = true
         }
-    })
-    return <div className={`group flex justify-between w-full p-2 my-0.5 rounded-lg transition-all ${ !current ? 'hover:bg-white-hover hover:shadow-lg' : 'bg-blue-light bg-opacity-15' }`}>
+    }, [])
+    return <div className={`group flex justify-between w-full p-2 my-0.5 rounded-lg transition-all ${ !current ? 'hover:bg-blue-grayish hover:shadow-lg' : 'bg-blue-light bg-opacity-15' }`}>
         <div className="flex w-full">
             <div onClick={() => isPaused && current ? onResume() : onPlay()} className="relative rounded overflow-hidden bg-black-light select-none cursor-pointer flex-shrink-0" style={{ width: "48px", height: "48px", flexBasis: "48px" }}>
                 { track.track.thumbnail && <img width={48} height={48} src={track.track.thumbnail} className={`rounded transition-all duration-200" alt="Track Thumbnail ${ !current ? 'group-hover:opacity-65' : 'opacity-65' }`} /> }
@@ -157,19 +177,31 @@ function PlayerQueueTrack({ track, isPaused, onPlay, onResume, onDelete, current
     </div>
 }
 
-const DotSeparator = () => <GoDotFill className="text-white-gray" style={{ fontSize: "8px"}}/>
-
-function TrackHeader({ track, loading }: {
+function TrackHeader({ track, onTrackLike, onTrackDislike, loading }: {
     track?: Track,
+    onTrackLike: (track: Track) => any
+    onTrackDislike: (track: Track) => any
     loading: boolean
 }){
+    const likeTrackClick = useCallback(async () => {
+        if(!track) return
+        if(track.isLiked) {
+            onTrackDislike(track)
+            return track.isLiked = false
+        }
+        onTrackLike(track)
+        track.isLiked = true
+    }, [track])
     if(loading) return <TrackHeaderSceleton/>
     if(!track) return null
     if(track.thumbnail) track.thumbnail = track.thumbnail.replace('-large', '-t500x500')
-    return <div className="p-2 w-full lg:max-w-64 xl:max-w-80 max-w-80">
-        <div className="w-full overflow-hidden rounded hover:shadow-lg transition-all duration-200 bg-black-light">
+    return <div className="relative p-2 w-full lg:max-w-64 xl:max-w-80 max-w-80">
+        <div className="relative w-full overflow-hidden rounded hover:shadow-lg transition-all duration-200 bg-black-light">
             { track.thumbnail ? <img src={track.thumbnail} alt="Track Banner" className="min-w-full aspect-square"/> 
             : <div className="min-w-full aspect-square"></div> }
+            <div className="absolute bottom-0 w-full px-2 py-1 flex items-center justify-end">
+                <SmallIconButton title="Like Song" iconClass="text-2xl" icon={FaRegHeart} activeIcon={FaHeart} onClick={() => likeTrackClick()} isActive={track.isLiked}/>
+            </div>
         </div>
         <div className="px-1 py-4">
             <p title={track.title} className="text-white-default font-bold text-center text-nowrap text-ellipsis overflow-hidden text-lg">{track.title}</p>

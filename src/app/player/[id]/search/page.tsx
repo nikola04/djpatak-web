@@ -89,7 +89,7 @@ function SoundCloudTrack({ track, onPlay, onQueueAdd }: Readonly<{
     onPlay: () => any,
     onQueueAdd: () => any 
 }>){
-    return <div className="group flex justify-between w-full p-2 rounded-lg transition-all hover:bg-white-hover">
+    return <div className="group flex justify-between w-full p-2 rounded-lg transition-all hover:bg-blue-grayish">
         <div className="flex">
             <div onClick={() => onPlay()} className="relative rounded overflow-hidden bg-black-light cursor-pointer select-none" style={{ width: "48px", height: "48px" }}>
                 { track.thumbnail && <img width={48} height={48} src={track.thumbnail} className="rounded group-hover:opacity-65 transition-all duration-200" alt="Track Thumbnail" /> }

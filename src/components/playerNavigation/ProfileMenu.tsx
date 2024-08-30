@@ -25,11 +25,11 @@ export default function NavProfileMenu({ profileLinks, user }: {
         <button onClick={() => setShowProfile(!showProfile)} title="My Profile" className={`rounded-full w-9 h-9 bg-black-pure cursor-pointer overflow-hidden hover:opacity-85 active:opacity-70`}>
             <img src={user.image} width={36} height={36} alt={"Profile Image"}/>
         </button>
-        {showProfile && <div className="absolute right-0 mt-2 w-64 rounded-lg z-20 overflow-hidden bg-black-light shadow-md">
-            <div className="hover:bg-white-hover active:bg-white-active border-b border-gray group">
+        {showProfile && <div className="absolute right-0 mt-2 w-64 rounded-lg z-20 overflow-hidden bg-blue-grayish shadow-md">
+            <div className="m-1 rounded-md bg-white-gray bg-opacity-0 hover:bg-opacity-5 active:bg-opacity-10 group overflow-hidden">
                 <Link href="/account/" className="text-white-gray" title="My Profile">
                     <span>
-                        <div className="grid items-center px-4 py-2.5" style={{ gridTemplateColumns: "1fr auto" }}>
+                        <div className="grid items-center px-4 py-2.5 border-b border-gray" style={{ gridTemplateColumns: "1fr auto" }}>
                             <div className="grid items-center" style={{ gridTemplateColumns: "auto 1fr" }}>
                                 <div className="rounded-full overflow-hidden" style={{ width: "34px", height: "34px" }}>
                                     <img src={user.image} alt={'Profile picture'} width={34} height={34}/>
@@ -51,7 +51,7 @@ export default function NavProfileMenu({ profileLinks, user }: {
 function NavProfileLink({ link }: {
     link: ProfileLink
 }){
-    return <div className="hover:bg-white-hover active:bg-white-active rounded-md group">
+    return <div className="bg-white-gray bg-opacity-0 hover:bg-opacity-5 active:bg-opacity-10 rounded-md group">
         <Button link={link}>
             <span className="block">
                 <div className="flex items-center justify-between px-3 py-2">

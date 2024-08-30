@@ -12,6 +12,8 @@ import { isParentOf } from '@/utils/frontend'
 import { useRouter } from "next/navigation";
 import { FaHeart } from "react-icons/fa6";
 import { GuildIcon } from "../discord/GuildIcon";
+import { FaWrench } from "react-icons/fa";
+
 
 type LinkType = {
     name: string,
@@ -35,9 +37,9 @@ const linksGrouped: {
         icon: IoRadioSharp,
         href: "/player/:id"
     },{
-        name: "Playlists",
-        icon: PiPlaylistFill,
-        href: '/player/:id/library/playlists'
+        name: "Customize",
+        icon: FaWrench,
+        href: '/player/:id/customize'
     }]
 },{
     id: MenuGroup.Library,
@@ -45,7 +47,7 @@ const linksGrouped: {
     links: [{
         name: "Liked",
         icon: FaHeart,
-        href: '/player/:id/library/playlists'
+        href: '/player/:id/library/liked'
     },{
         name: "Playlists",
         icon: PiPlaylistFill,
@@ -63,7 +65,7 @@ export default function SideNav({ guildId, allowedMenuGroups }: Readonly<{
     useEffect(() => {
         if(!loading){
             if(!userGuilds.some(({ id }) => id == guildId)) 
-                router.push('/player/select-server')
+                return// router.push('/player/select-server')
         }
     }, [loading, userGuilds, guildId, router])
     const pathname = usePathname()
@@ -102,13 +104,13 @@ function GuildSelector({ userGuilds, selectedId }: Readonly<{
     if(selectedGuild == null) return null
 
     return <div ref={profileMenuRef} className="m-2 relative">
-        <div onClick={() => setOpen(!open)} className={`relative flex w-52 overflow-hidden border border-transparent items-center bg-black-light rounded-md px-2 py-1.5 cursor-pointer hover:border-blue-light transition-all duration-200 active:ring-blue ring-[2px] ${open ? 'ring-blue' : 'ring-transparent'}`}>
+        <div onClick={() => setOpen(!open)} className={`relative flex w-52 overflow-hidden border border-transparent items-center bg-blue-dark rounded-md px-2 py-1.5 cursor-pointer hover:border-blue-light transition-all duration-200 active:ring-blue ring-[2px] ${open ? 'ring-blue' : 'ring-transparent'}`}>
             <div style={{ padding: "2px"}}>
                 <GuildIcon guild={selectedGuild} size={24}/>
             </div>
             <p className="text-white-gray px-2 text-base text-nowrap text-ellipsis overflow-hidden" title={selectedGuild.name}>{selectedGuild.name}</p>
         </div>
-        { open && <div className="absolute left-0 p-1.5 mt-2 w-52 rounded-lg z-20 overflow-hidden bg-black-light shadow-md">
+        { open && <div className="absolute left-0 p-1.5 mt-2 w-52 rounded-lg z-20 overflow-hidden bg-blue-grayish shadow-md">
             { userGuilds.map((guild: DiscordGuild, ind) => <div onClick={() => router.push('/player/'+guild.id)} key={ind} className="flex w-full items-center top-0 p-1 hover:bg-white-hover active:bg-white-active rounded-md cursor-pointer transition-all">
                 <div style={{ padding: "2px" }}>
                     <GuildIcon guild={guild} size={24}/>
@@ -149,7 +151,7 @@ function NavItem({ data, guildId, pathname }: {
         url = data.href.replace("/player/:id", `/player/${guildId}`)
     }
     const Icon = data.icon;
-    return <Link title={data.name} href={url} className={`my-0.5 py-1.5 rounded-md min-w-40 px-2 hover:bg-white-hover active:bg-white-active transition-all ${isActive(url) ? 'bg-blue-light' : ''}`}>
+    return <Link title={data.name} href={url} className={`my-0.5 py-1.5 rounded-md min-w-40 px-2 ${ !isActive(url) && "hover:bg-blue-grayish" } active:bg-opacity-90 transition-all bg-opacity-100 ${isActive(url) && 'bg-blue-light'}`}>
         <span>
             <div className="flex items-center">
                 <Icon className="text-white-default text-lg"/>
