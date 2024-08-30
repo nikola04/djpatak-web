@@ -19,23 +19,13 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  return (
-    <html lang="en">
-      <body className={nunitoFont.className}>
-        <Providers>
-          <div className="w-screen h-screen bg-blue bg-black-default">
-              <div className="relative w-screen h-screen grid gap-x-8" style={{ gridTemplateRows: "auto 1fr", gridTemplateColumns: "auto 1fr" }}>
-                <NavLogo/>
-                <Suspense>
-                  <Nav guildId={null} />
-                </Suspense>
-                <div className="col-span-2">
-                  {children}
-                </div>
-              </div>
-          </div>
-          </Providers>
-        </body>
-    </html>
-  );
+  return <div className="relative w-screen h-screen grid gap-x-8" style={{ gridTemplateRows: "auto 1fr", gridTemplateColumns: "auto 1fr" }}>
+    <NavLogo/>
+    <Suspense>
+      <Nav guildId={null} />
+    </Suspense>
+    <div className="col-span-2">
+      {children}
+    </div>
+  </div>
 }
