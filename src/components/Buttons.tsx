@@ -1,20 +1,44 @@
+import { ButtonHTMLAttributes, isValidElement, ReactNode } from "react"
 import { IconType } from "react-icons"
 
-const SmallIconButton = ({ title, icon, activeIcon, buttonClass, iconClass, onClick, isActive }: {
+interface SmallIconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>{
     title: string,
-    icon: IconType,
-    activeIcon?: IconType,
-    buttonClass?: string,
-    iconClass?: string,
-    onClick: () => any,
-    isActive?: boolean
-}) => {
-    const Icon = isActive && activeIcon ? activeIcon : icon
-    return <button title={title} onClick={() => onClick()} className={`hover:bg-white-hover active:bg-white-active w-11 h-11 flex items-center justify-center rounded-full transition-all duration-150 ${buttonClass}`}>
-        <Icon className={`${isActive ? "text-blue-light transition-all" : "text-white-gray transition-all"} ${iconClass}`} />
+    icon: ReactNode,
+    isActive?: boolean,
+    activeIcon?: ReactNode
+}
+
+const SmallIconButton = ({ className, icon, isActive, activeIcon, ...restProps }: SmallIconButtonProps) => {
+    const _icon = isActive && activeIcon ? activeIcon : icon
+    return <button className={`hover:bg-white-hover active:bg-white-active w-10 h-10 flex items-center justify-center rounded-full transition-all duration-150 ${className}`} {...restProps}>
+        <span className="text-white-default">
+            { _icon }
+        </span>
     </button>
 }
 
+interface PrimaryButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>{
+    value: string
+    icon?: ReactNode
+}
+
+const PrimaryButton = ({ title, value, icon, className, ...restProps }: PrimaryButtonProps) => {
+    const Icon = icon
+    return <button title={title ?? value} className={`bg-blue-light hover:bg-blue-sky active:bg-opacity-90 transition-all rounded outline-0 border-1 border-transparent py-1.5 px-2.5 text-white-default ${className}`} {...restProps}>
+        <span>
+            <div className="flex gap-1.5 items-center">
+                { Icon }
+                <p>{ value }</p>
+            </div>
+        </span>
+    </button>
+}
+
+function isIconType(icon: any): icon is IconType {
+    return typeof icon === 'function' && icon.prototype?.render != null;
+}
+
 export {
-    SmallIconButton
+    SmallIconButton,
+    PrimaryButton
 }

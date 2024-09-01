@@ -8,21 +8,24 @@ import { DbTrack } from "../../../../../../types/tracks";
 import { useCallback, useState } from "react";
 import { PiQueue } from "react-icons/pi";
 
-export default function LikedPage({ params: { id }}: {
+export default function LikedPage({ params: { playerId }}: {
     params: {
-        id: string
+        playerId: string
     }
 }){
     const { data: tracks, setData: setTracks, loading: tracksloading } = useLikedTracks()
     return <div className="flex w-full flex-col px-3 py-5">
         <div className="flex w-full items-center justify-between">
-            <h2 className="text-white-default text-xl font-bold">Liked Songs</h2>
+            <div>
+                <p className="text-white-default opacity-40 text-sm py-0.5">Liked /</p>
+                <h2 className="text-white-default text-xl font-bold py-2">Liked Songs</h2>
+            </div>
         </div>
         <div className="w-full lg:w-auto flex-col p-2 flex-grow">
             { !tracksloading && tracks.length == 0 ? <div>
                 <p className="text-white-default">No liked tracks. You should start searching!</p>
             </div>
-            : <TracksList guildId={id} tracks={tracks} loading={tracksloading} Buttons={({ track }: { track: DbTrack}) => LikedTrackButtons({ track, guildId: id})}/> }
+            : <TracksList guildId={playerId} tracks={tracks} loading={tracksloading} Buttons={({ track }: { track: DbTrack}) => LikedTrackButtons({ track, guildId: playerId})}/> }
         </div>
     </div>;
 }
@@ -66,7 +69,7 @@ function LikedTrackButtons({ guildId, track }: {
         }
     }, [guildId])
     return <>
-        <SmallIconButton title="Like Song" iconClass="text-xl" icon={FaRegHeart} activeIcon={FaHeart} onClick={likeTrackClick} isActive={isLiked}/>
-        <SmallIconButton title="Add to Queue" iconClass="text-xl" icon={PiQueue} onClick={addToQueueClick}/>
+        <SmallIconButton title="Like Song" icon={<FaRegHeart className="text-xl"/>} activeIcon={<FaHeart className="text-xl text-blue-light"/>} onClick={likeTrackClick} isActive={isLiked}/>
+        <SmallIconButton title="Add to Queue" icon={<PiQueue className="text-xl"/>} onClick={addToQueueClick}/>
     </>
 }

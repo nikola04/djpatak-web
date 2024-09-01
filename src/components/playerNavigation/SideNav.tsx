@@ -130,7 +130,7 @@ function GuildSelector({ userGuilds, selectedId }: Readonly<{
 
 function GuildSelectorSceleton(){
     return <div className="m-2 flex flex-col">
-        <div className="flex items-center bg-black-light rounded-md px-2 py-1.5 w-52 border border-transparent">
+        <div className="flex items-center bg-blue-dark rounded-md px-2 py-1.5 w-52 border border-transparent">
             <div style={{ padding: "2px"}}>
                 <div className="rounded-full bg-black-default animate-pulse" style={{ width: "24px", height: "24px" }}></div>
             </div>

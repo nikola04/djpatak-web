@@ -7,10 +7,10 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({
     children,
-    params: { id }
+    params: { playerId }
   }: Readonly<{
     children: React.ReactNode,
-    params: { id: string }
+    params: { playerId: string }
   }>) {
     return children
 }

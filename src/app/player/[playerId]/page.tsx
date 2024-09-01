@@ -14,18 +14,18 @@ import { SmallIconButton } from "@/components/Buttons";
 import { FaHeart, FaRegHeart } from "react-icons/fa6";
 import { DotSeparator } from "@/components/library/tracksList";
 
-export default function Home({ params: { id }}: {
+export default function Home({ params: { playerId }}: {
     params: {
-        id: string
+        playerId: string
     }
 }) {
-    const { data: track, setData: setTrack, status, setStatus, loading: trackLoading } = useCurrentTrack(id)
-    const { data: queue, setData: setQueue, loading: queueLoading } = usePlayerQueue(id)
+    const { data: track, setData: setTrack, status, setStatus, loading: trackLoading } = useCurrentTrack(playerId)
+    const { data: queue, setData: setQueue, loading: queueLoading } = usePlayerQueue(playerId)
     const { socket, ready } = useSockets()
     const { pushAlert } = useAlert()
     useEffect(() => {
         if(!ready) return
-        const handler = new socketEventHandler(socket, id)
+        const handler = new socketEventHandler(socket, playerId)
         handler.subscribe('now-playing', (track: QueueTrack) => {
             setTrack(track); setStatus('playing');
         })
@@ -36,10 +36,10 @@ export default function Home({ params: { id }}: {
         handler.subscribe('pause', () => setStatus('paused'))
         handler.subscribe('resume', () => setStatus('playing'))
         return () => handler.destroy()
-    }, [ready, socket, id])
+    }, [ready, socket, playerId])
     const playTrack = async (track: QueueTrack) => {
         try{
-            await playTrackByQueueId(id, track.queueId)
+            await playTrackByQueueId(playerId, track.queueId)
             setTrack(track)
         }catch(err){
             pushAlert(String(err))
@@ -48,7 +48,7 @@ export default function Home({ params: { id }}: {
     }
     const resumeTrack = async () => {
         try{
-            await resume(id)
+            await resume(playerId)
             setStatus('playing')
         }catch(err){
             pushAlert(String(err))
@@ -57,7 +57,7 @@ export default function Home({ params: { id }}: {
     }
     const deleteTrack = async (track: QueueTrack) => {
         try{
-            await removeTrackByQueueId(id, track.queueId)
+            await removeTrackByQueueId(playerId, track.queueId)
             setQueue((queue) => queue.filter((queueTrack) => queueTrack.queueId !== track.queueId))
         }catch(err){
             pushAlert(String(err))
@@ -110,12 +110,12 @@ function PlayerQueue({ queue, status, onPlay, onResume, onDelete, loading, curre
 }
 function PlayerQueueTrackSceleton(){
     return <div className="flex w-full p-2 my-0.5">
-        <div className="relative rounded overflow-hidden bg-black-light animate-pulse" style={{ width: "48px", height: "48px" }}></div>
+        <div className="relative rounded overflow-hidden bg-blue-grayishanimate-pulse" style={{ width: "48px", height: "48px" }}></div>
         <div className="flex flex-col pl-2.5 justify-around" style={{ height: "48px" }}>
-            <div className="h-4 w-96 bg-black-light animate-pulse"></div>
+            <div className="h-4 w-96 bg-blue-grayish animate-pulse"></div>
             <div className="flex text-sm text-white-gray gap-2">
-                <div className="h-3 w-28 bg-black-light animate-pulse"></div>
-                <div className="h-3 w-10 bg-black-light animate-pulse"></div>
+                <div className="h-3 w-28 bg-blue-grayish animate-pulse"></div>
+                <div className="h-3 w-10 bg-blue-grayish animate-pulse"></div>
             </div>
         </div>
     </div>
@@ -171,9 +171,7 @@ function PlayerQueueTrack({ track, isPaused, onPlay, onResume, onDelete, current
                 </div>
             </div>
             <div className="flex items-center justify-center">
-                <button title={"Remove Song"} onClick={() => onDelete()} className="hover:bg-white-hover active:bg-white-active w-10 h-10 flex items-center justify-center rounded-full transition-all duration-150">
-                    <TfiTrash className="text-white-gray text-lg"/>
-                </button>
+                <SmallIconButton title="Remove Song" onClick={onDelete} icon={<TfiTrash className="text-lg"/>}/>
             </div>
         </div>
     </div>
@@ -202,7 +200,7 @@ function TrackHeader({ track, onTrackLike, onTrackDislike, loading }: {
             { track.thumbnail ? <img src={track.thumbnail} alt="Track Banner" className="min-w-full aspect-square"/> 
             : <div className="min-w-full aspect-square"></div> }
             <div className="absolute bottom-0 w-full px-2 py-1 flex items-center justify-end">
-                <SmallIconButton title="Like Song" iconClass="text-2xl" icon={FaRegHeart} activeIcon={FaHeart} onClick={() => likeTrackClick()} isActive={track.isLiked}/>
+                <SmallIconButton className="w-11 h-11" title={track.isLiked ? "Dislike Song" : "Like Song"} icon={<FaRegHeart className="text-2xl"/>} activeIcon={<FaHeart className="text-2xl text-blue-light"/>} onClick={likeTrackClick} isActive={track.isLiked}/>
             </div>
         </div>
         <div className="px-1 py-4">
@@ -214,10 +212,10 @@ function TrackHeader({ track, onTrackLike, onTrackDislike, loading }: {
 
 function TrackHeaderSceleton(){
     return <div className="p-2 w-80">
-    <div className="w-full overflow-hidden aspect-square bg-black-light animate-pulse"></div>
+    <div className="w-full overflow-hidden aspect-square bg-blue-grayish animate-pulse"></div>
     <div className="px-1 py-5 flex flex-col items-center justify-center">
-        <div className="bg-black-light animate-pulse w-64 h-4"></div>
-        <div className="bg-black-light animate-pulse w-32 h-3 my-3.5"></div>
+        <div className="bg-blue-grayish animate-pulse w-64 h-4"></div>
+        <div className="bg-blue-grayish animate-pulse w-32 h-3 my-3.5"></div>
     </div>
 </div>
 }

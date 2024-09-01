@@ -11,9 +11,9 @@ import { IconType } from "react-icons";
 import { formatDuration } from "@/utils/tracks";
 import { useAlert } from "@/components/Alert";
 
-export default function SearchPage({ params: { id }}: {
+export default function SearchPage({ params: { playerId }}: {
     params: {
-        id: string
+        playerId: string
     }
 }) {
     const searchParams = useSearchParams()
@@ -23,7 +23,7 @@ export default function SearchPage({ params: { id }}: {
     const [soundcloudTracks, setSoundcloudTracks] = useState<Track[]|null>(null)
     const { pushAlert } = useAlert()
     const playTrack = useCallback(async (track: Track, force?: boolean) => {
-        const url = new URL(`${process.env.NEXT_PUBLIC_API_URL!}/api/v1/player/${id}/tracks/soundcloud/${encodeURIComponent(track.permalink)}`)
+        const url = new URL(`${process.env.NEXT_PUBLIC_API_URL!}/api/v1/player/${playerId}/tracks/soundcloud/${encodeURIComponent(track.permalink)}`)
         if(force) url.searchParams.set('force', '1')
         const { status, data } = await apiRequest(url.href, {
             method: "POST",
@@ -32,7 +32,7 @@ export default function SearchPage({ params: { id }}: {
             if(data.error) return pushAlert(data.error)
             pushAlert("An error has occured while playing track")
         }
-    }, [id])
+    }, [playerId])
     const loadData = useCallback(async (query: string) => { 
         setLoaded(false)
         const { status, data } = await apiRequest(`${process.env.NEXT_PUBLIC_API_URL!}/api/v1/tracks/search/${encodeURIComponent(query)}?limit=${tracksLimit}`, undefined, ResponseDataType.JSON)
@@ -73,12 +73,12 @@ function SoundCloudTracks({ soundcloudTracks, loaded, tracksLimit, onPlay, onQue
 
 function SoundCloudTrackSceleton(){
     return <div className="flex w-full p-2">
-        <div className="relative rounded overflow-hidden bg-black-light animate-pulse" style={{ width: "48px", height: "48px" }}></div>
+        <div className="relative rounded overflow-hidden bg-blue-grayish animate-pulse" style={{ width: "48px", height: "48px" }}></div>
         <div className="flex flex-col pl-2.5 justify-around" style={{ height: "48px" }}>
-            <div className="h-4 w-96 bg-black-light animate-pulse"></div>
+            <div className="h-4 w-96 bg-blue-grayish animate-pulse"></div>
             <div className="flex text-sm text-white-gray gap-2">
-                <div className="h-3 w-28 bg-black-light animate-pulse"></div>
-                <div className="h-3 w-10 bg-black-light animate-pulse"></div>
+                <div className="h-3 w-28 bg-blue-grayish animate-pulse"></div>
+                <div className="h-3 w-10 bg-blue-grayish animate-pulse"></div>
             </div>
         </div>
     </div>

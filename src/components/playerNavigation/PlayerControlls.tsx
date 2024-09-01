@@ -7,10 +7,8 @@ import { IconType } from "react-icons";
 import { IoIosPlay, IoIosSkipBackward } from "react-icons/io";
 import { IoIosSkipForward } from "react-icons/io";
 import { IoIosPause } from "react-icons/io";
-import { IoIosShuffle } from "react-icons/io";
 import { PiRepeatOnce, PiRepeat } from "react-icons/pi";
 import { IoVolumeLowOutline, IoVolumeMediumOutline, IoVolumeMuteOutline } from "react-icons/io5";
-
 import { Slider } from "@nextui-org/slider";
 
 import { next, pause, prev, repeat, resume, volume as updatePlayerVolume, volume } from "@/utils/controlls";
@@ -134,7 +132,7 @@ export default function PlayerControlls({ className, guildId }: {
                 <PlayerRepeatButton onClick={repeatPress} repeat={playerPreferences?.repeat} />
             </div>
             <div className="ml-auto flex items-center">
-                <SmallIconButton title="Like Song" iconClass="text-xl" icon={FaRegHeart} activeIcon={FaHeart} onClick={() => likeTrackClick()} isActive={data.track.isLiked}/>
+                <SmallIconButton title="Like Song" className="w-11 h-11" icon={<FaRegHeart className="text-xl"/>} activeIcon={<FaHeart className="text-xl text-blue-light"/>} onClick={likeTrackClick} isActive={data.track.isLiked}/>
                 <PlayerVolumeSlider updateVolume={updateVolume} defaultVolume={playerPreferences.volume} />
             </div>
         </div>

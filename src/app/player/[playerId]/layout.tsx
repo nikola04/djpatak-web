@@ -10,18 +10,18 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-  params: { id }
+  params: { playerId }
 }: Readonly<{
   children: React.ReactNode,
-  params: { id: string }
+  params: { playerId: string }
 }>) {
   return <div className="relative w-screen h-screen grid gap-x-8" style={{ gridTemplateRows: "auto 1fr", gridTemplateColumns: "auto 1fr" }}>
       <NavLogo/>
-      <Nav guildId={id} />
-      <SideNav guildId={id} allowedMenuGroups={[ "guildSelector", "library", "player"]} />
+      <Nav guildId={playerId} />
+      <SideNav guildId={playerId} allowedMenuGroups={[ "guildSelector", "library", "player"]} />
       <div className="w-auto h-auto relative overflow-x-hidden overflow-y-auto mb-1">
           {children}
       </div>
-      <PlayerControlls guildId={id} className="col-span-2 border-t border-black-light"/>
+      <PlayerControlls guildId={playerId} className="col-span-2 border-t border-black-light"/>
   </div>
 }
