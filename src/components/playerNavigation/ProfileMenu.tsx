@@ -4,10 +4,11 @@ import { useEffect, useRef, useState } from "react";
 import { FaChevronRight } from "react-icons/fa6";
 import { ProfileLink } from "./Nav";
 import { isParentOf } from "@/utils/frontend";
+import { User } from "@/../types/user";
 
 export default function NavProfileMenu({ profileLinks, user }: {
     profileLinks: ProfileLink[],
-    user: any
+    user: User
 }){
     const [showProfile, setShowProfile] = useState(false);
     const profileButtonRef = useRef(null)

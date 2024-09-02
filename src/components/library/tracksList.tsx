@@ -6,7 +6,7 @@ import { AnimationItem } from "lottie-web";
 import * as audioWaveData from '@/app/player/[playerId]/lottie-audiwave.json'
 import { QueueTrack } from "../../../types/soundcloud";
 import { FaPlay } from "react-icons/fa";
-import { useAlert } from "../Alert";
+import { useAlert } from "@/components/providers/Alert";
 import { socketEventHandler, useSockets } from "@/utils/sockets";
 
 export function TracksList({ guildId, tracks, loading, Buttons }: {

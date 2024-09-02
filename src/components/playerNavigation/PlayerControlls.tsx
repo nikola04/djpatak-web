@@ -12,7 +12,7 @@ import { IoVolumeLowOutline, IoVolumeMediumOutline, IoVolumeMuteOutline } from "
 import { Slider } from "@nextui-org/slider";
 
 import { next, pause, prev, repeat, resume, volume as updatePlayerVolume, volume } from "@/utils/controlls";
-import { useAlert } from "@/components/Alert";
+import { useAlert } from "@/components/providers/Alert";
 import { Repeat } from "../../../types/player";
 import { capitilizeWord, isParentOf } from "@/utils/frontend";
 import { SmallIconButton } from "../Buttons";

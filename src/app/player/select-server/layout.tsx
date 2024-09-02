@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
 import Nav, { NavLogo } from "@/components/playerNavigation/Nav";
-import Providers from "@/components/Providers";
 import { Suspense } from "react";
 
 const nunitoFont = Nunito({ 

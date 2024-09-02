@@ -1,12 +1,12 @@
 "use client"
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import NavProfileMenu from "./ProfileMenu";
 import DiscordButton from '../discord/DiscordSignIn';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useUserData } from "@/utils/user";
 import apiRequest, { ResponseDataType } from "@/utils/apiRequest";
 import Link from "next/link";
 import Image from "next/image";
+import { useAuth } from "../providers/Auth";
 
 export type ProfileLink = {
     name: string,
@@ -77,9 +77,9 @@ export function NavLogo(){
 function ProfileMenu({ profileLinks }: {
     profileLinks: ProfileLink[]
 }){
-    const { loading, data } = useUserData()
+    const { user, loading } = useAuth()
     if(loading) return <ProfileSceleton/>
-    if(data) return <NavProfileMenu user={data} profileLinks={profileLinks}/> 
+    if(user) return <NavProfileMenu user={user} profileLinks={profileLinks}/> 
     return <DiscordButton onClick={() => window.open(process.env.NEXT_PUBLIC_DISCORD_LOGIN_URL)}/>
 }
 

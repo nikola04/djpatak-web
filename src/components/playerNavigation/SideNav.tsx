@@ -14,7 +14,6 @@ import { FaHeart } from "react-icons/fa6";
 import { GuildIcon } from "../discord/GuildIcon";
 import { FaWrench } from "react-icons/fa";
 
-
 type LinkType = {
     name: string,
     icon: IconType,
