@@ -1,6 +1,4 @@
 "use client";
-
-import { Track } from "../../../../types/soundcloud";
 import {
   dislikeTrack,
   formatDuration,
