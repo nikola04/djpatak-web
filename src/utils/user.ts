@@ -48,6 +48,17 @@ export async function updatePlaylist(
   throw data.error;
 }
 
+export async function playPlaylist(playerId: string, playlistId: string) {
+  const { status, data } = await apiRequest(
+    `${process.env.NEXT_PUBLIC_API_URL!}/api/v1/player/${playerId}/tracks/playlists/${playlistId}`,
+    { method: "POST" },
+    ResponseDataType.JSON,
+    true,
+  );
+  if (status == 200) return true;
+  throw data.error;
+}
+
 export async function addTrackToPlaylist(
   playlistId: string,
   providerId: string,

@@ -1,12 +1,11 @@
 "use client";
 import { useAlert } from "@/components/providers/Alert";
 import { SmallIconButton } from "@/components/Buttons";
-import { TracksList } from "@/components/library/tracksList";
+import { TracksList } from "@/components/library/TracksList";
 import {
   dislikeTrack,
   likeTrack,
   playSoundcloudTrack,
-  useCurrentTrack,
   useLikedTracks,
 } from "@/utils/tracks";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
@@ -16,6 +15,7 @@ import { PiQueue } from "react-icons/pi";
 import AddToPlaylistMenu from "@/components/AddToPlaylistMenu";
 import { useUserPlaylists } from "@/utils/user";
 import { Playlist } from "../../../../../../types/user";
+import { LibraryPageHeader } from "@/components/library/PageHeader";
 
 export default function LikedPage({
   params: { playerId },
@@ -42,16 +42,7 @@ export default function LikedPage({
   );
   return (
     <div className="flex w-full flex-col px-3 py-5">
-      <div className="flex w-full items-center justify-between">
-        <div>
-          <p className="text-white-default opacity-40 text-sm py-0.5">
-            Liked /
-          </p>
-          <h2 className="text-white-default text-xl font-bold py-2">
-            Liked Songs
-          </h2>
-        </div>
-      </div>
+      <LibraryPageHeader title="Liked Tracks" path={["Liked"]} />
       <div className="w-full lg:w-auto flex-col p-2 flex-grow">
         {!tracksloading && tracks.length == 0 ? (
           <div>

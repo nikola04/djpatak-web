@@ -43,7 +43,7 @@ export function AlertProvider({ children }: { children: ReactNode }) {
           id: uuid(),
           message: alert,
           isError: error,
-          timeRemaining: error ? 30 : 7,
+          timeRemaining: error ? 15 : 7,
         },
       ];
     });

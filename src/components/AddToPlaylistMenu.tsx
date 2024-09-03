@@ -147,7 +147,7 @@ function PlaylistMenuItem({
   return (
     <div
       onClick={onClick}
-      className="flex items-center py-1.5 px-0 cursor-pointer rounded bg-white-gray bg-opacity-0 hover:bg-opacity-5"
+      className="flex items-center py-1.5 px-0 cursor-pointer rounded bg-white-gray transition-all bg-opacity-0 hover:bg-opacity-5 active:bg-opacity-10"
     >
       <p className="text-white-gray flex-grow overflow-hidden text-nowrap whitespace-nowrap text-ellipsis px-2 text-sm">
         {playlist.name}

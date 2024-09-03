@@ -1,6 +1,6 @@
-import { QueueTrack } from "../../types/soundcloud";
 import Cookies from "js-cookie";
 import { playerPreferences } from "../../types/player";
+import { QueueTrack } from "../../types/tracks";
 
 export enum ResponseDataType {
   JSON,

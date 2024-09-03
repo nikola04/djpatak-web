@@ -1,6 +1,6 @@
 "use client";
 
-import { QueueTrack, Track } from "../../../../types/soundcloud";
+import { Track } from "../../../../types/soundcloud";
 import {
   dislikeTrack,
   formatDuration,
@@ -11,7 +11,7 @@ import {
   usePlayerQueue,
 } from "@/utils/tracks";
 import { socketEventHandler, useSockets } from "@/utils/sockets";
-import { useCallback, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import * as audioWaveData from "./lottie-audiwave.json";
 import { TfiTrash } from "react-icons/tfi";
 import { FaPlay } from "react-icons/fa";
@@ -20,11 +20,11 @@ import { resume } from "@/utils/controlls";
 import { AnimationItem } from "lottie-web";
 import { SmallIconButton } from "@/components/Buttons";
 import { FaHeart, FaRegHeart } from "react-icons/fa6";
-import { DotSeparator } from "@/components/library/tracksList";
-import { MdOutlinePlaylistAdd } from "react-icons/md";
+import { DotSeparator } from "@/components/library/TracksList";
 import AddToPlaylistMenu from "@/components/AddToPlaylistMenu";
 import { useUserPlaylists } from "@/utils/user";
 import { Playlist } from "../../../../types/user";
+import { DbTrack, QueueTrack } from "../../../../types/tracks";
 
 export default function Home({
   params: { playerId },
@@ -96,9 +96,9 @@ export default function Home({
       console.error(err);
     }
   };
-  const onTrackLike = async (track: Track) => {
+  const onTrackLike = async (track: DbTrack) => {
     try {
-      await likeTrack(track.permalink, "soundcloud");
+      await likeTrack(track.providerTrackId, track.providerId);
       track.isLiked = true;
       return;
     } catch (err) {
@@ -106,9 +106,9 @@ export default function Home({
       console.error(err);
     }
   };
-  const onTrackDislike = async (track: Track) => {
+  const onTrackDislike = async (track: DbTrack) => {
     try {
-      await dislikeTrack(track.permalink, "soundcloud");
+      await dislikeTrack(track.providerTrackId, track.providerId);
       track.isLiked = false;
       return;
     } catch (err) {
@@ -124,7 +124,7 @@ export default function Home({
       <TrackHeader
         playlists={sortedPlaylists}
         loading={trackLoading}
-        track={track?.track}
+        track={track}
         onTrackLike={onTrackLike}
         onTrackDislike={onTrackDislike}
       />
@@ -257,11 +257,11 @@ function PlayerQueueTrack({
           className="relative rounded overflow-hidden bg-black-light select-none cursor-pointer flex-shrink-0"
           style={{ width: "48px", height: "48px", flexBasis: "48px" }}
         >
-          {track.track.thumbnail && (
+          {track.trackData.thumbnail && (
             <img
               width={48}
               height={48}
-              src={track.track.thumbnail}
+              src={track.trackData.thumbnail}
               className={`rounded transition-all duration-200" alt="Track Thumbnail ${!current ? "group-hover:opacity-65" : "opacity-65"}`}
             />
           )}
@@ -284,23 +284,22 @@ function PlayerQueueTrack({
           style={{ flexBasis: "280px" }}
         >
           <p
-            title={track.track.title}
+            title={track.trackData.title}
             className="text-white-gray text-base font-bold text-nowrap whitespace-nowrap text-ellipsis overflow-hidden"
           >
-            {track.track.title}
+            {track.trackData.title}
           </p>
           <div className="flex text-sm items-center text-white-gray gap-1">
             <a
-              title={`SoundCloud: ${track.track.user.username}`}
-              href={track.track.user.permalink}
+              title={`SoundCloud: ${track.trackData.author}`}
               target="_blank"
               className="hover:underline"
             >
-              {track.track.user.username}
+              {track.trackData.author}
             </a>
             <DotSeparator />
             <p className="">
-              {formatDuration(Math.ceil(track.track.duration / 1000))}
+              {formatDuration(Math.ceil(track.trackData.duration / 1000))}
             </p>
           </div>
         </div>
@@ -323,10 +322,10 @@ function TrackHeader({
   onTrackDislike,
   loading,
 }: {
-  track?: Track;
+  track: QueueTrack | null;
   playlists: Playlist[];
-  onTrackLike: (track: Track) => any;
-  onTrackDislike: (track: Track) => any;
+  onTrackLike: (track: DbTrack) => any;
+  onTrackDislike: (track: DbTrack) => any;
   loading: boolean;
 }) {
   const likeTrackClick = async () => {
@@ -340,14 +339,17 @@ function TrackHeader({
   };
   if (loading) return <TrackHeaderSceleton />;
   if (!track) return null;
-  if (track.thumbnail)
-    track.thumbnail = track.thumbnail.replace("-large", "-t500x500");
+  if (track.trackData.thumbnail)
+    track.trackData.thumbnail = track.trackData.thumbnail.replace(
+      "-large",
+      "-t500x500",
+    );
   return (
     <div className="relative lg:sticky lg:top-0 p-2 w-full lg:max-w-64 xl:max-w-80 max-w-80 flex flex-col">
       <div className="relative w-full overflow-hidden rounded hover:shadow-xl transition-all duration-200 bg-black-light">
-        {track.thumbnail ? (
+        {track.trackData.thumbnail ? (
           <img
-            src={track.thumbnail}
+            src={track.trackData.thumbnail}
             alt="Track Banner"
             className="min-w-full aspect-square"
           />
@@ -364,19 +366,7 @@ function TrackHeader({
         ></div>
       </div>
       <div className="w-full flex gap-1 justify-center items-center pt-2 pb-1">
-        <AddToPlaylistMenu
-          playlists={playlists}
-          track={{
-            providerId: "soundcloud",
-            providerTrackId: track.permalink,
-            trackData: {
-              title: track.title,
-              thumbnail: track.thumbnail ?? "",
-              duration: track.duration,
-              author: track.user.username,
-            },
-          }}
-        />
+        <AddToPlaylistMenu playlists={playlists} track={track} />
         <SmallIconButton
           className="w-11 h-11"
           title={track.isLiked ? "Dislike Song" : "Like Song"}
@@ -388,13 +378,13 @@ function TrackHeader({
       </div>
       <div className="px-1">
         <p
-          title={track.title}
+          title={track.trackData.title}
           className="text-white-default font-bold text-center text-nowrap text-ellipsis overflow-hidden text-lg"
         >
-          {track.title}
+          {track.trackData.title}
         </p>
         <p className="text-white-gray text-center text-sm py-1">
-          {track.user.username}
+          {track.trackData.author}
         </p>
       </div>
     </div>

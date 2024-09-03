@@ -9,7 +9,7 @@ import { SmallIconButton } from "@/components/Buttons";
 import AddToPlaylistMenu from "@/components/AddToPlaylistMenu";
 import { Playlist } from "@/../types/user";
 import { DbTrack } from "@/../types/tracks";
-import { TracksList } from "@/components/library/tracksList";
+import { TracksList } from "@/components/library/TracksList";
 import { useUserPlaylists } from "@/utils/user";
 
 export default function SearchPage({

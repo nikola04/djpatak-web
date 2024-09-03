@@ -11,11 +11,12 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { MdCreate } from "react-icons/md";
 import { Playlist } from "@/../types/user";
 import { PlaylistPopupContent, usePopup } from "@/components/providers/Popup";
-import { TracksList } from "@/components/library/tracksList";
+import { TracksList } from "@/components/library/TracksList";
 import { DbTrack } from "@/../types/tracks";
 import { useAlert } from "@/components/providers/Alert";
 import { dislikeTrack, likeTrack, playSoundcloudTrack } from "@/utils/tracks";
 import { PiQueue } from "react-icons/pi";
+import { LibraryPageHeader } from "@/components/library/PageHeader";
 
 export default function PlaylistPage({
   params: { playerId, playlistId },
@@ -79,39 +80,25 @@ export default function PlaylistPage({
     ),
     [playerId],
   );
+  const memoizedHeaderButtons = useCallback(
+    () => <PageHeaderButtons openEditPlaylist={openEditPlaylist} />,
+    [openEditPlaylist],
+  );
   useEffect(() => {
     if (!playlistsLoading && !data) goToPlaylists();
   }, [data, goToPlaylists, playlistsLoading]);
   if (playlistsLoading) return <PlaylistPageSceleton />;
   return (
     <div className="flex flex-col w-full px-3 pr-4 py-5">
-      {
-        <div className="flex items-center justify-between w-full">
-          <div>
-            <p className="text-white-default opacity-40 text-sm py-0.5">
-              Playlists / {data?.name}
-            </p>
-            <div className="flex items-center">
-              <SmallIconButton
-                title="Playlists"
-                className="my-1 mr-1"
-                icon={<FaArrowLeft />}
-                onClick={goToPlaylists}
-              />
-              <h2 className="text-white-default text-xl font-bold">
-                {data?.name}
-              </h2>
-            </div>
-          </div>
-          <div className="mr-2">
-            <PrimaryButton
-              value="Edit"
-              onClick={openEditPlaylist}
-              icon={<MdCreate className="text-lg" />}
-            />
-          </div>
-        </div>
-      }
+      {data && (
+        <LibraryPageHeader
+          path={["Playlists", data.name]}
+          title={data.name}
+          folder={false}
+          Buttons={memoizedHeaderButtons}
+          goBack={goToPlaylists}
+        />
+      )}
       <div className="w-full py-4">
         {data && <PlaylistHeader playlist={data} />}
       </div>
@@ -124,6 +111,20 @@ export default function PlaylistPage({
         />
       </div>
     </div>
+  );
+}
+
+function PageHeaderButtons({
+  openEditPlaylist,
+}: {
+  openEditPlaylist: () => any;
+}) {
+  return (
+    <PrimaryButton
+      value="Edit"
+      onClick={openEditPlaylist}
+      icon={<MdCreate className="text-lg" />}
+    />
   );
 }
 
@@ -216,8 +217,8 @@ const PlaylistPageSceleton = () => (
           <div className="h-6 w-64 rounded bg-blue-grayish animate-pulse"></div>
         </div>
       </div>
-      <div className="mr-2">
-        <div className="w-[73px] h-[38px] bg-blue-light rounded animate-pulse"></div>
+      <div className="mr-2 place-self-start">
+        <div className="w-[74px] h-[38px] bg-blue-light rounded animate-pulse"></div>
       </div>
     </div>
     <div className="w-full"></div>

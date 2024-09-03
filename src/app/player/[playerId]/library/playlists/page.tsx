@@ -1,11 +1,17 @@
 "use client";
-import { FaPlus } from "react-icons/fa6";
-import { createNewPlaylist, useUserPlaylists } from "@/utils/user";
+import { FaPlay, FaPlus } from "react-icons/fa6";
+import {
+  createNewPlaylist,
+  playPlaylist,
+  useUserPlaylists,
+} from "@/utils/user";
 import { PlaylistPopupContent, usePopup } from "@/components/providers/Popup";
-import { PrimaryButton } from "@/components/Buttons";
+import { PrimaryButton, SmallIconButton } from "@/components/Buttons";
 import { useAlert } from "@/components/providers/Alert";
 import { Playlist as PlaylistType } from "@/../types/user";
 import { useRouter } from "next/navigation";
+import { LibraryPageHeader } from "@/components/library/PageHeader";
+import { useCallback } from "react";
 
 export default function PlaylistsPage({
   params: { playerId },
@@ -52,24 +58,17 @@ export default function PlaylistsPage({
     );
     showPopup();
   };
+  const memoizedHeaderButtons = useCallback(
+    () => <PageHeaderButtons openCreateNewPlaylists={openCreateNewPlaylists} />,
+    [],
+  );
   return (
     <div className="flex flex-col w-full px-3 pr-4 py-5">
-      <div className="flex items-center justify-between w-full">
-        <div>
-          <p className="text-white-default opacity-40 text-sm py-0.5">
-            Playlists /
-          </p>
-          <h2 className="text-white-default text-xl font-bold py-2">
-            My Playlists
-          </h2>
-        </div>
-        <PrimaryButton
-          onClick={openCreateNewPlaylists}
-          value="Create Playlist"
-          icon={<FaPlus />}
-          className="mr-2"
-        />
-      </div>
+      <LibraryPageHeader
+        path={["Playlists"]}
+        title="My Playlists"
+        Buttons={memoizedHeaderButtons}
+      />
       <div className="w-full">
         {!playlistsLoading && playlists.length == 0 ? (
           <div className="py-4">
@@ -87,7 +86,11 @@ export default function PlaylistsPage({
                   <PlaylistSceleton key={ind} />
                 ))
               : sortedPlaylists.map((playlist) => (
-                  <Playlist key={playlist._id} playlist={playlist} />
+                  <Playlist
+                    key={playlist._id}
+                    playerId={playerId}
+                    playlist={playlist}
+                  />
                 ))}
           </div>
         )}
@@ -96,18 +99,54 @@ export default function PlaylistsPage({
   );
 }
 
-const Playlist = ({ playlist }: { playlist: PlaylistType }) => {
-  const Router = useRouter();
+const PageHeaderButtons = ({
+  openCreateNewPlaylists,
+}: {
+  openCreateNewPlaylists: () => any;
+}) => {
   return (
-    <div className="flex flex-col">
-      <div
-        onClick={() => Router.push(`playlists/${playlist._id}`)}
-        className="w-full aspect-square bg-blue-grayish rounded cursor-pointer"
-      >
-        <div className="w-full h-full"></div>
+    <PrimaryButton
+      onClick={openCreateNewPlaylists}
+      value="Create Playlist"
+      icon={<FaPlus />}
+    />
+  );
+};
+
+const Playlist = ({
+  playerId,
+  playlist,
+}: {
+  playerId: string;
+  playlist: PlaylistType;
+}) => {
+  const router = useRouter();
+  const { pushAlert } = useAlert();
+  const onPlay = async () => {
+    try {
+      await playPlaylist(playerId, playlist._id);
+      pushAlert("Playlist tracks are added to Queue", false);
+    } catch (err) {
+      pushAlert(String(err));
+    }
+  };
+  const onClick = () => router.push(`playlists/${playlist._id}`);
+  return (
+    <div className="flex flex-col group">
+      <div className="flex flex-col justify-end w-full aspect-square bg-blue-grayish rounded">
+        <div className="flex flex-grow cursor-pointer" onClick={onClick}></div>
+        <div className="flex flex-shrink-0 items-center w-full p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+          <SmallIconButton
+            className="w-12 h-12 bg-white-hover"
+            title={"Play All"}
+            onClick={onPlay}
+            icon={<FaPlay className="text-xl ml-0.5" />}
+          />
+        </div>
       </div>
       <p
         title={playlist.name}
+        onClick={onClick}
         className="text-white-default py-1 w-full text-nowrap overflow-hidden whitespace-nowrap text-ellipsis font-thin"
       >
         {playlist.name}

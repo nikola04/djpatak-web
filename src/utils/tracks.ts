@@ -1,9 +1,9 @@
-import { QueueTrack, Track } from "../../types/soundcloud";
+import { Track } from "../../types/soundcloud";
 import { useEffect, useMemo, useState } from "react";
 import apiRequest, { QueueTrackResponse, ResponseDataType } from "./apiRequest";
 import { playerPreferences } from "../../types/player";
 import { isValidPlayerPreferences } from "../../validators/player";
-import { DbTrack } from "../../types/tracks";
+import { DbTrack, QueueTrack } from "../../types/tracks";
 
 export function formatDuration(seconds: number): string {
   const twoDigits = (num: number): string => (num < 10 ? `0${num}` : `${num}`);
