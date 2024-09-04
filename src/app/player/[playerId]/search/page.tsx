@@ -34,12 +34,18 @@ export default function SearchPage({
         formated.push({
           providerId: "soundcloud",
           providerTrackId: track.permalink,
-          trackData: {
+          data: {
             title: track.title,
+            permalink: track.permalink,
             thumbnail: track.thumbnail ?? "",
-            duration: Math.floor(track.duration / 1000),
-            author: track.user.username,
+            durationInSec: track.duration,
           },
+          authors: [
+            {
+              username: track.user.username,
+              permalink: track.user.permalink,
+            },
+          ],
         }),
       );
     return formated;

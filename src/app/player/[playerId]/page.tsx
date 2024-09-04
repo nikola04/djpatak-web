@@ -255,11 +255,11 @@ function PlayerQueueTrack({
           className="relative rounded overflow-hidden bg-black-light select-none cursor-pointer flex-shrink-0"
           style={{ width: "48px", height: "48px", flexBasis: "48px" }}
         >
-          {track.trackData.thumbnail && (
+          {track.data.thumbnail && (
             <img
               width={48}
               height={48}
-              src={track.trackData.thumbnail}
+              src={track.data.thumbnail}
               className={`rounded transition-all duration-200" alt="Track Thumbnail ${!current ? "group-hover:opacity-65" : "opacity-65"}`}
             />
           )}
@@ -282,22 +282,29 @@ function PlayerQueueTrack({
           style={{ flexBasis: "280px" }}
         >
           <p
-            title={track.trackData.title}
+            title={track.data.title}
             className="text-white-gray text-base font-bold text-nowrap whitespace-nowrap text-ellipsis overflow-hidden"
           >
-            {track.trackData.title}
+            {track.data.title}
           </p>
           <div className="flex text-sm items-center text-white-gray gap-1">
-            <a
-              title={`SoundCloud: ${track.trackData.author}`}
-              target="_blank"
-              className="hover:underline"
-            >
-              {track.trackData.author}
-            </a>
+            {track.authors.map((author, ind) => (
+              <>
+                <a
+                  key={ind}
+                  title={author.username}
+                  href={author.permalink}
+                  target="_blank"
+                  className="text-ellipsis text-nowrap overflow-hidden hover:underline leading-3 text-sm"
+                >
+                  {author.username}
+                </a>
+                {ind != track.authors.length - 1 && ", "}
+              </>
+            ))}
             <DotSeparator />
             <p className="">
-              {formatDuration(Math.ceil(track.trackData.duration / 1000))}
+              {formatDuration(Math.ceil(track.data.durationInSec))}
             </p>
           </div>
         </div>
@@ -337,17 +344,14 @@ function TrackHeader({
   };
   if (loading) return <TrackHeaderSceleton />;
   if (!track) return null;
-  if (track.trackData.thumbnail)
-    track.trackData.thumbnail = track.trackData.thumbnail.replace(
-      "-large",
-      "-t500x500",
-    );
+  if (track.data.thumbnail)
+    track.data.thumbnail = track.data.thumbnail.replace("-large", "-t500x500");
   return (
     <div className="relative lg:sticky lg:top-0 p-2 w-full lg:max-w-64 xl:max-w-80 max-w-80 flex flex-col">
       <div className="relative w-full overflow-hidden rounded hover:shadow-xl transition-all duration-200 bg-black-light">
-        {track.trackData.thumbnail ? (
+        {track.data.thumbnail ? (
           <img
-            src={track.trackData.thumbnail}
+            src={track.data.thumbnail}
             alt="Track Banner"
             className="min-w-full aspect-square"
           />
@@ -376,13 +380,25 @@ function TrackHeader({
       </div>
       <div className="px-1">
         <p
-          title={track.trackData.title}
+          title={track.data.title}
           className="text-white-default font-bold text-center text-nowrap text-ellipsis overflow-hidden text-lg"
         >
-          {track.trackData.title}
+          {track.data.title}
         </p>
         <p className="text-white-gray text-center text-sm py-1">
-          {track.trackData.author}
+          {track.authors.map((author, ind) => (
+            <>
+              <a
+                key={ind}
+                title={author.username}
+                href={author.permalink}
+                target="_blank"
+              >
+                {author.username}
+              </a>
+              {ind != track.authors.length - 1 && ", "}
+            </>
+          ))}
         </p>
       </div>
     </div>

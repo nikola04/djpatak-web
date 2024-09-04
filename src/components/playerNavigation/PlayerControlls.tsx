@@ -73,7 +73,7 @@ export default function PlayerControlls({
     handler.subscribe("pause", () => setStatus("paused"));
     handler.subscribe("resume", () => setStatus("playing"));
     return () => handler.destroy();
-  }, [ready, socket, guildId, setData, setStatus]);
+  }, [ready, socket, guildId, setData, setStatus, setPlayerPreferences]);
   // On Clicks
   const playPrev = async () => {
     try {
@@ -337,23 +337,23 @@ function PlayerRepeatButton({
 
 function TrackUser({
   loading,
-  data,
+  data: trackData,
 }: {
   loading: boolean;
   data: QueueTrack | null;
 }) {
   if (loading) return <TrackSceleton />;
-  if (data)
+  if (trackData)
     return (
       <div
         className="grid gap-3 w-64 overflow-hidden"
         style={{ gridTemplateColumns: "auto 1fr" }}
       >
         <div className="w-12 h-12 rounded overflow-hidden">
-          {data.trackData.thumbnail ? (
+          {trackData.data.thumbnail ? (
             <img
               alt="Track Thumbnail"
-              src={data.trackData.thumbnail}
+              src={trackData.data.thumbnail}
               width={48}
               height={48}
             />
@@ -363,20 +363,27 @@ function TrackUser({
         </div>
         <div className="text-white-gray w-48 flex flex-col justify-around">
           <a
-            href={data.providerTrackId}
-            title={data.trackData.title}
+            href={trackData.data.permalink}
+            title={trackData.data.title}
             target="_blank"
             className="font-bold text-ellipsis text-nowrap overflow-hidden hover:underline leading-3 text-base"
           >
-            {data.trackData.title}
+            {trackData.data.title}
           </a>
-          <a
-            title={data.trackData.author}
-            target="_blank"
-            className="text-ellipsis text-nowrap overflow-hidden hover:underline leading-3 text-sm"
-          >
-            {data.trackData.author}
-          </a>
+          {trackData.authors.map((author, ind) => (
+            <>
+              <a
+                key={ind}
+                title={author.username}
+                href={author.permalink}
+                target="_blank"
+                className="text-ellipsis text-nowrap overflow-hidden hover:underline leading-3 text-sm"
+              >
+                {author.username}
+              </a>
+              {ind != trackData.authors.length - 1 && ", "}
+            </>
+          ))}
         </div>
       </div>
     );

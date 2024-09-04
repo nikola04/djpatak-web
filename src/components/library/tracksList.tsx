@@ -115,11 +115,11 @@ function Track({
           className="relative rounded overflow-hidden bg-black-light select-none cursor-pointer flex-shrink-0"
           style={{ width: "48px", height: "48px", flexBasis: "48px" }}
         >
-          {track.trackData.thumbnail && (
+          {track.data.thumbnail && (
             <img
               width={48}
               height={48}
-              src={track.trackData.thumbnail}
+              src={track.data.thumbnail}
               className={`rounded transition-all duration-200" alt="Track Thumbnail ${!isPlayingNow ? "group-hover:opacity-65" : "opacity-65"}`}
             />
           )}
@@ -142,15 +142,28 @@ function Track({
           style={{ flexBasis: "280px" }}
         >
           <p
-            title={track.trackData.title}
+            title={track.data.title}
             className="text-white-gray text-base font-bold text-nowrap whitespace-nowrap text-ellipsis overflow-hidden"
           >
-            {track.trackData.title}
+            {track.data.title}
           </p>
           <div className="flex text-sm items-center text-white-gray gap-1">
-            <a title={track.trackData.author}>{track.trackData.author}</a>
+            {track.authors.map((author, ind) => (
+              <>
+                <a
+                  key={ind}
+                  title={author.username}
+                  href={author.permalink}
+                  target="_blank"
+                  className="text-ellipsis text-nowrap overflow-hidden hover:underline leading-3 text-sm"
+                >
+                  {author.username}
+                </a>
+                {ind != track.authors.length - 1 && ", "}
+              </>
+            ))}
             <DotSeparator />
-            <p>{formatDuration(track.trackData.duration)}</p>
+            <p>{formatDuration(track.data.durationInSec)}</p>
           </div>
         </div>
         <div className="flex items-center justify-center">{buttons}</div>
