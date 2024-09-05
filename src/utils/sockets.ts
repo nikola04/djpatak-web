@@ -47,11 +47,16 @@ export function useSockets() {
 
 type EventType =
   | "now-playing"
-  | "new-queue-song"
+  | "new-queue-songs"
+  | "remove-queue-song"
+  | "clear-queue"
+  | "no-queue-track"
   | "queue-end"
   | "pause"
   | "resume"
-  | "repeat";
+  | "repeat"
+  | "stop"
+  | "volume";
 export class socketEventHandler {
   private eventsMap: Map<EventType, (data?: any) => any>;
   private socket: WebSocket;
@@ -82,12 +87,28 @@ export class socketEventHandler {
     );
   }
   public subscribe(
-    ev: "now-playing" | "new-queue-song",
+    ev: "now-playing",
     handler: (track: QueueTrack) => any,
   ): void;
+  public subscribe(
+    ev: "new-queue-songs",
+    handler: (tracks: QueueTrack[]) => any,
+  ): void;
+  public subscribe(
+    ev: "remove-queue-song",
+    handler: (queueId: string) => any,
+  ): void;
+  public subscribe(ev: "clear-queue", handler: () => any): void;
   public subscribe(ev: "repeat", handler: (repeat: Repeat) => any): void;
   public subscribe(
-    ev: Exclude<EventType, "now-playing" | "new-queue-song" | "repeat">,
+    ev: Exclude<
+      EventType,
+      | "now-playing"
+      | "new-queue-songs"
+      | "remove-queue-song"
+      | "clear-queue"
+      | "repeat"
+    >,
     handler: () => any,
   ): void;
   public subscribe(ev: EventType, handler: (arg?: any) => any) {

@@ -53,9 +53,13 @@ export default function Home({
       setTrack(track);
       setStatus("playing");
     });
-    handler.subscribe("new-queue-song", (track: QueueTrack) =>
-      setQueue((prev) => [...prev, track]),
+    handler.subscribe("new-queue-songs", (tracks: QueueTrack[]) =>
+      setQueue((prev) => [...prev, ...tracks]),
     );
+    handler.subscribe("remove-queue-song", (queueId: string) =>
+      setQueue((prev) => prev.filter((t) => t.queueId != queueId)),
+    );
+    handler.subscribe("clear-queue", () => setQueue([]));
     handler.subscribe("queue-end", () => {
       setTrack(null);
       setStatus("paused");
