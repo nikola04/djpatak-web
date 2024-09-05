@@ -79,6 +79,7 @@ const config: Config = {
         },
         red: {
           ansi: "#ff5555",
+          "ansi-light": "#ff6969",
         },
         green: {
           success: "#5cb85c",

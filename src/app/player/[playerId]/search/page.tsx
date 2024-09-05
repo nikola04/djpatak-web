@@ -38,7 +38,7 @@ export default function SearchPage({
             title: track.title,
             permalink: track.permalink,
             thumbnail: track.thumbnail ?? "",
-            durationInSec: track.duration,
+            durationInSec: Math.floor(track.duration / 1000),
           },
           authors: [
             {

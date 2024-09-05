@@ -1,10 +1,4 @@
-import {
-  HTMLAttributes,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { HTMLAttributes, useEffect, useMemo, useRef, useState } from "react";
 import { SmallIconButton } from "./Buttons";
 import { addTrackToPlaylist, useUserPlaylists } from "@/utils/user";
 import { Playlist } from "@/../types/user";
@@ -49,7 +43,7 @@ export default function AddToPlaylistMenu({
         track.providerId,
         track.providerTrackId,
       );
-      pushAlert("Track has been added to Playlists", false);
+      pushAlert("Track has been added to Playlist", false);
       setIsActive(false);
     } catch (error) {
       pushAlert(String(error));

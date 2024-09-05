@@ -28,23 +28,23 @@ const SmallIconButton = ({
   );
 };
 
-interface PrimaryButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface DefaultButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   value: string;
   icon?: ReactNode;
 }
 
-const PrimaryButton = ({
+const DefaultButton = ({
   title,
   value,
   icon,
   className,
   ...restProps
-}: PrimaryButtonProps) => {
+}: DefaultButtonProps) => {
   const Icon = icon;
   return (
     <button
       title={title ?? value}
-      className={`bg-blue-light hover:bg-blue-sky active:bg-opacity-90 transition-all rounded outline-0 border-1 border-transparent py-1.5 px-2.5 text-white-default ${className}`}
+      className={`transition-all rounded outline-0 border-1 border-transparent py-1.5 px-2.5 ${className}`}
       {...restProps}
     >
       <span>
@@ -57,8 +57,21 @@ const PrimaryButton = ({
   );
 };
 
+const PrimaryButton = ({ className, ...restProps }: DefaultButtonProps) => (
+  <DefaultButton
+    className={`bg-blue-light hover:bg-blue-sky active:bg-opacity-90 text-white-default ${className}`}
+    {...restProps}
+  />
+);
+const DangerButton = ({ className, ...restProps }: DefaultButtonProps) => (
+  <DefaultButton
+    className={`bg-red-ansi hover:bg-red-ansi-light active:bg-opacity-90 text-white-default ${className}`}
+    {...restProps}
+  />
+);
+
 function isIconType(icon: any): icon is IconType {
   return typeof icon === "function" && icon.prototype?.render != null;
 }
 
-export { SmallIconButton, PrimaryButton };
+export { SmallIconButton, PrimaryButton, DangerButton };

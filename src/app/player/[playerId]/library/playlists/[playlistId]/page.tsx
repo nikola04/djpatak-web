@@ -3,7 +3,9 @@ import { PrimaryButton, SmallIconButton } from "@/components/Buttons";
 import { FaArrowLeft, FaHeart, FaRegHeart } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import {
+  removePlaylistTrack,
   updatePlaylist,
+  deletePlaylist as deleteUserPlaylist,
   useUserPlaylist,
   useUserPlaylistTracks,
 } from "@/utils/user";
@@ -17,6 +19,7 @@ import { useAlert } from "@/components/providers/Alert";
 import { dislikeTrack, likeTrack, playSoundcloudTrack } from "@/utils/tracks";
 import { PiQueue } from "react-icons/pi";
 import { LibraryPageHeader } from "@/components/library/PageHeader";
+import { TfiTrash } from "react-icons/tfi";
 
 export default function PlaylistPage({
   params: { playerId, playlistId },
@@ -31,8 +34,11 @@ export default function PlaylistPage({
     setData: setPlaylist,
     loading: playlistsLoading,
   } = useUserPlaylist(playlistId);
-  const { data: playlistTracks, loading: playlistTracksLoading } =
-    useUserPlaylistTracks(playlistId);
+  const {
+    data: playlistTracks,
+    setData: setPlaylistTracks,
+    loading: playlistTracksLoading,
+  } = useUserPlaylistTracks(playlistId);
   const { setPopup, showPopup, hidePopup } = usePopup();
   const { pushAlert } = useAlert();
   const router = useRouter();
@@ -62,6 +68,18 @@ export default function PlaylistPage({
       pushAlert(String(err));
     }
   };
+  const deletePlaylist = async (callback: (err: boolean) => any) => {
+    if (!data) return;
+    try {
+      await deleteUserPlaylist(data._id);
+      callback(false);
+      goToPlaylists();
+      pushAlert("Playlist is deleted", false);
+    } catch (err) {
+      callback(true);
+      pushAlert(String(err));
+    }
+  };
   const openEditPlaylist = useCallback(() => {
     if (!data) return;
     setPopup(
@@ -69,16 +87,30 @@ export default function PlaylistPage({
         initialValues={{ name: data.name, desc: data?.description ?? "" }}
         onClose={hidePopup}
         submit={editPlaylist}
+        onDletePlaylist={deletePlaylist}
         submitType="edit"
       />,
     );
     showPopup();
   }, [data]);
+  const onRemovePlaylistTrack = (track: DbTrack) =>
+    setPlaylistTracks((prev) =>
+      prev.filter(
+        (t) =>
+          t.providerTrackId != track.providerTrackId ||
+          t.providerId != track.providerId,
+      ),
+    );
   const memoizedButtons = useCallback(
     ({ track }: { track: DbTrack }) => (
-      <PlaylistTrackButtons guildId={playerId} track={track} />
+      <PlaylistTrackButtons
+        guildId={playerId}
+        playlist={data}
+        track={track}
+        onTrackDelete={() => onRemovePlaylistTrack(track)}
+      />
     ),
-    [playerId],
+    [data, playerId],
   );
   const memoizedHeaderButtons = useCallback(
     () => <PageHeaderButtons openEditPlaylist={openEditPlaylist} />,
@@ -130,16 +162,31 @@ function PageHeaderButtons({
 
 function PlaylistTrackButtons({
   guildId,
+  playlist,
   track,
+  onTrackDelete,
 }: {
   guildId: string;
+  playlist: Playlist | null;
   track: DbTrack;
+  onTrackDelete: () => any;
 }) {
-  useEffect(() => {
-    console.log("mounted");
-  }, []);
   const { pushAlert } = useAlert();
   const [isLiked, setIsLiked] = useState<boolean>(false);
+  const removeTrackClick = async () => {
+    if (!playlist) return pushAlert("No Playlist data");
+    try {
+      await removePlaylistTrack(
+        playlist._id,
+        track.providerId,
+        track.providerTrackId,
+      );
+      onTrackDelete();
+      pushAlert("Track is removed from Playlist", false);
+    } catch (err) {
+      pushAlert(String(err));
+    }
+  };
   const onTrackLike = async () => {
     try {
       await likeTrack(track.providerTrackId, "soundcloud");
@@ -186,6 +233,11 @@ function PlaylistTrackButtons({
         title="Add to Queue"
         icon={<PiQueue className="text-xl" />}
         onClick={addToQueueClick}
+      />
+      <SmallIconButton
+        title="Remove Song"
+        icon={<TfiTrash className="text-xl" />}
+        onClick={removeTrackClick}
       />
     </>
   );

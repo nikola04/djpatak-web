@@ -47,6 +47,20 @@ export async function updatePlaylist(
   }
   throw data.error;
 }
+export async function deletePlaylist(playlistId: string) {
+  const { status, data } = await apiRequest(
+    `${process.env.NEXT_PUBLIC_API_URL!}/api/v1/users/me/playlists/${playlistId}`,
+    {
+      method: "DELETE",
+    },
+    ResponseDataType.JSON,
+    true,
+  );
+  if (status == 200 && data.status == "ok") {
+    return true;
+  }
+  throw data.error;
+}
 
 export async function playPlaylist(playerId: string, playlistId: string) {
   const { status, data } = await apiRequest(
@@ -79,6 +93,29 @@ export async function addTrackToPlaylist(
   if (status == 200) {
     const playlist = data.playlist as Playlist;
     return playlist;
+  }
+  throw data.error;
+}
+
+export async function removePlaylistTrack(
+  playlistId: string,
+  providerId: string,
+  providerTrackId: string,
+) {
+  const { status, data } = await apiRequest(
+    `${process.env.NEXT_PUBLIC_API_URL!}/api/v1/users/me/playlists/${playlistId}/tracks/${encodeURIComponent(providerTrackId)}`,
+    {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ providerId, providerTrackId }),
+    },
+    ResponseDataType.JSON,
+    true,
+  );
+  if (status == 200 && data.status === "ok") {
+    return true;
   }
   throw data.error;
 }
@@ -205,5 +242,17 @@ export function useUserData() {
     fetchData();
   }, []);
 
-  return { data, loading };
+  return { data, setData, loading };
+}
+
+export async function userSignOut() {
+  const { status, data } = await apiRequest(
+    `${process.env.NEXT_PUBLIC_API_URL}/auth/logout`,
+    {
+      method: "POST",
+    },
+    ResponseDataType.JSON,
+  );
+  if (status == 200) return true;
+  throw data.error;
 }
