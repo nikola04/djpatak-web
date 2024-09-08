@@ -10,7 +10,6 @@ import useWindowDimensions from './hooks/windowSize';
 import { isParentOf } from '@/utils/frontend';
 import { Spinner } from './ui/spinner';
 import { IoCheckmark, IoClose } from 'react-icons/io5';
-import { IoIosClose } from 'react-icons/io';
 import { FaChevronLeft } from 'react-icons/fa6';
 
 interface PlaylistWithAddedTrack extends Playlist {
@@ -65,6 +64,7 @@ export default function AddToPlaylistMenu({ track, playlists, setPlaylists, clas
 			setPlaylists((prev) => [playlist, ...prev]);
 			setIsActive(true);
 			callback(false);
+			setOpenWindow('list');
 			pushAlert('Playlist created', false);
 		} catch (err) {
 			callback(true);
@@ -172,7 +172,7 @@ function PlaylistList({
 				<div className="flex flex-col px-2 py-1 h-full overflow-y-auto">
 					<div
 						onClick={createNewPlaylist}
-						className="flex items-center py-1.5 my-1 px-1.5 cursor-pointer rounded-md bg-white-gray bg-opacity-0 hover:bg-opacity-5"
+						className="flex items-center py-1.5 my-1 px-1.5 cursor-pointer rounded-md bg-white-gray bg-opacity-0 hover:bg-opacity-5 active:bg-opacity-[0.07] transition-all"
 					>
 						<PiPlus className="text-blue-light text-md" />
 						<p className="text-blue-light text-sm font-thin flex-grow overflow-hidden text-nowrap whitespace-nowrap text-ellipsis px-2 ">

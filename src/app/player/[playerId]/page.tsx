@@ -154,7 +154,7 @@ function PlayerQueue({
 			playlists={playlists}
 			isPaused={status === 'paused'}
 			track={track}
-			key={ind}
+			key={track.queueId}
 			onResume={() => onResume()}
 			onPlay={() => onPlay(track)}
 			onDelete={() => onDelete(track)}
@@ -251,9 +251,8 @@ function PlayerQueueTrack({
 					</p>
 					<div className="flex text-sm items-center text-white-gray gap-1">
 						{track.authors.map((author, ind) => (
-							<>
+							<span key={ind}>
 								<a
-									key={ind}
 									title={author.username}
 									href={author.permalink}
 									target="_blank"
@@ -262,7 +261,7 @@ function PlayerQueueTrack({
 									{author.username}
 								</a>
 								{ind != track.authors.length - 1 && ', '}
-							</>
+							</span>
 						))}
 						<DotSeparator />
 						<p className="">{formatDuration(Math.ceil(track.data.durationInSec))}</p>
@@ -337,12 +336,12 @@ function TrackHeader({
 				</p>
 				<p className="text-white-gray text-center text-sm py-1">
 					{track.authors.map((author, ind) => (
-						<>
-							<a key={ind} title={author.username} href={author.permalink} target="_blank">
+						<span key={author.permalink}>
+							<a title={author.username} href={author.permalink} target="_blank">
 								{author.username}
 							</a>
 							{ind != track.authors.length - 1 && ', '}
-						</>
+						</span>
 					))}
 				</p>
 			</div>

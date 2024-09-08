@@ -48,10 +48,10 @@ export function TracksList({
 		[guildId]
 	);
 	if (loading) return [...new Array(10)].map((_, ind) => <TrackSceleton key={ind} />);
-	return tracks.map((track, ind) => (
+	return tracks.map((track: DbTrack) => (
 		<Track
 			onPlay={onPlayTrack}
-			key={ind}
+			key={track.providerId + track.providerTrackId}
 			track={track}
 			isPlayingNow={currentTrack?.providerTrackId === track.providerTrackId}
 			isPaused={status === 'paused'}
@@ -130,9 +130,8 @@ function Track({
 					</p>
 					<div className="flex text-sm items-center text-white-gray gap-1">
 						{track.authors.map((author, ind) => (
-							<>
+							<span key={author.permalink}>
 								<a
-									key={ind}
 									title={author.username}
 									href={author.permalink}
 									target="_blank"
@@ -141,7 +140,7 @@ function Track({
 									{author.username}
 								</a>
 								{ind != track.authors.length - 1 && ', '}
-							</>
+							</span>
 						))}
 						<DotSeparator />
 						<p>{formatDuration(track.data.durationInSec)}</p>
