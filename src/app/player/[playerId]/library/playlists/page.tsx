@@ -6,7 +6,7 @@ import { PrimaryButton, SmallIconButton } from '@/components/Buttons';
 import { useAlert } from '@/components/providers/Alert';
 import { Playlist as PlaylistType } from '@/../types/user';
 import { useRouter } from 'next/navigation';
-import { LibraryPageHeader } from '@/components/library/PageHeader';
+import { PageHeader } from '@/components/library/PageHeader';
 import { useCallback } from 'react';
 
 export default function PlaylistsPage({
@@ -39,11 +39,11 @@ export default function PlaylistsPage({
 	const memoizedHeaderButtons = useCallback(() => <PageHeaderButtons openCreateNewPlaylists={openCreateNewPlaylists} />, []);
 	return (
 		<div className="flex flex-col w-full px-3 pr-4 py-5">
-			<LibraryPageHeader path={['Playlists']} title="My Playlists" Buttons={memoizedHeaderButtons} />
+			<PageHeader path={['Playlists']} title="My Playlists" Buttons={memoizedHeaderButtons} />
 			<div className="w-full">
 				{!playlistsLoading && playlists.length == 0 ? (
 					<div className="py-4">
-						<p className="text-white-gray">No playlists. You can create one now.</p>
+						<p className="text-black-light dark:text-white-gray">No playlists. You can create one now.</p>
 					</div>
 				) : (
 					<div className="grid gap-4 py-4 mr-2" style={{ gridTemplateColumns: 'repeat(auto-fit, 12rem)' }}>
@@ -75,7 +75,7 @@ const Playlist = ({ playerId, playlist }: { playerId: string; playlist: Playlist
 	const onClick = () => router.push(`playlists/${playlist._id}`);
 	return (
 		<div className="flex flex-col group">
-			<div className="flex flex-col justify-end w-full aspect-square bg-blue-grayish rounded">
+			<div className="flex flex-col justify-end w-full aspect-square bg-white-default dark:bg-blue-grayish rounded transition-colors duration-150">
 				<div className="flex flex-grow cursor-pointer" onClick={onClick}></div>
 				<div className="flex flex-shrink-0 items-center w-full opacity-0 group-hover:opacity-100 transition-opacity duration-150">
 					<SmallIconButton
@@ -90,7 +90,7 @@ const Playlist = ({ playerId, playlist }: { playerId: string; playlist: Playlist
 			<p
 				title={playlist.name}
 				onClick={onClick}
-				className="text-white-default py-1 w-full text-nowrap overflow-hidden whitespace-nowrap text-ellipsis font-thin"
+				className="text-black-default dark:text-white-default py-1 w-full text-nowrap overflow-hidden whitespace-nowrap text-ellipsis font-light"
 			>
 				{playlist.name}
 			</p>

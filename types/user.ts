@@ -23,4 +23,5 @@ export interface UserSearchHistory {
 	searchProviders: TrackProvider[];
 	search: string;
 	searchedAt: Date;
+	deleted?: boolean;
 }

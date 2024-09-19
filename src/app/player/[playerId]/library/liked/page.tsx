@@ -10,7 +10,7 @@ import { PiQueue } from 'react-icons/pi';
 import AddToPlaylistMenu from '@/components/AddToPlaylistMenu';
 import { useUserPlaylists } from '@/utils/user';
 import { Playlist } from '../../../../../../types/user';
-import { LibraryPageHeader } from '@/components/library/PageHeader';
+import { PageHeader } from '@/components/library/PageHeader';
 
 export default function LikedPage({
 	params: { playerId },
@@ -29,7 +29,7 @@ export default function LikedPage({
 	);
 	return (
 		<div className="flex w-full flex-col px-3 py-5">
-			<LibraryPageHeader title="Liked Tracks" path={['Liked']} />
+			<PageHeader title="Liked Tracks" path={['Liked']} />
 			<div className="w-full lg:w-auto flex-col p-2 flex-grow">
 				{!tracksloading && tracks.length == 0 ? (
 					<div>
@@ -93,12 +93,16 @@ function LikedTrackButtons({
 		<>
 			<SmallIconButton
 				title="Like Song"
-				icon={<FaRegHeart className="text-xl" />}
+				icon={<FaRegHeart className="text-black-default dark:text-white-default text-xl" />}
 				activeIcon={<FaHeart className="text-xl text-blue-light" />}
 				onClick={likeTrackClick}
 				isActive={isLiked}
 			/>
-			<SmallIconButton title="Add to Queue" icon={<PiQueue className="text-xl" />} onClick={addToQueueClick} />
+			<SmallIconButton
+				title="Add to Queue"
+				icon={<PiQueue className="text-black-default dark:text-white-default text-xl" />}
+				onClick={addToQueueClick}
+			/>
 			<AddToPlaylistMenu playlists={playlists} setPlaylists={setPlaylists} track={track} />
 		</>
 	);

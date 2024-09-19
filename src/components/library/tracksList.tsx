@@ -96,7 +96,7 @@ function Track({
 	}, []);
 	return (
 		<div
-			className={`group flex justify-between w-full p-2 my-0.5 rounded-lg transition-all ${!isPlayingNow ? 'hover:bg-blue-grayish hover:shadow-lg' : 'bg-blue-light bg-opacity-15'}`}
+			className={`group flex justify-between w-full p-2 my-0.5 rounded-lg transition-all ${!isPlayingNow ? 'hover:bg-white-hover dark:hover:bg-black-hover dark:hover:shadow-lg' : 'bg-blue-light bg-opacity-15'}`}
 		>
 			<div className="flex w-full">
 				<div
@@ -124,11 +124,11 @@ function Track({
 				<div className="flex flex-col ml-2.5 justify-around w-[200] flex-grow flex-shrink" style={{ flexBasis: '280px' }}>
 					<p
 						title={track.data.title}
-						className="text-white-gray text-base font-bold text-nowrap whitespace-nowrap text-ellipsis overflow-hidden"
+						className="text-black-light dark:text-white-gray text-base font-bold text-nowrap whitespace-nowrap text-ellipsis overflow-hidden"
 					>
 						{track.data.title}
 					</p>
-					<div className="flex text-sm items-center text-white-gray gap-1">
+					<div className="flex text-sm items-center text-black-light dark:text-white-gray gap-1">
 						{track.authors.map((author, ind) => (
 							<span key={author.permalink}>
 								<a
@@ -167,4 +167,4 @@ function TrackSceleton() {
 	);
 }
 
-export const DotSeparator = () => <GoDotFill className="text-white-gray" style={{ fontSize: '8px' }} />;
+export const DotSeparator = () => <GoDotFill className="text-black-light dark:text-white-gray" style={{ fontSize: '8px' }} />;

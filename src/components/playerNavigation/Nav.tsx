@@ -3,29 +3,78 @@ import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 're
 import NavProfileMenu from './ProfileMenu';
 import DiscordButton from '../discord/DiscordSignIn';
 import { useRouter, useSearchParams } from 'next/navigation';
-import apiRequest, { ResponseDataType } from '@/utils/apiRequest';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useAuth } from '../providers/Auth';
-import { getUserSearchHistory, userSignOut } from '@/utils/user';
+import { getUserSearchHistory, removeUserSearchHistory, userSignOut } from '@/utils/user';
 import { useAlert } from '../providers/Alert';
 import { UserSearchHistory } from '../../../types/user';
 import { FaHistory } from 'react-icons/fa';
 import { IoIosClose } from 'react-icons/io';
 import { isParentOf } from '@/utils/frontend';
+import { IconType } from 'react-icons';
+import { LuLamp } from 'react-icons/lu';
+import { PiGear, PiGearBold, PiGearSix } from 'react-icons/pi';
+import { FiLogOut } from 'react-icons/fi';
+import { HiOutlineServerStack } from 'react-icons/hi2';
+import { useTheme } from '../providers/Theme';
 
-export type ProfileLink = {
+interface BaseLinkType {
 	name: string;
-	href: string;
-	func: (() => void) | null;
-	chevron: boolean;
-};
+	href?: string;
+	icon: IconType;
+}
+interface MenuLinkType extends BaseLinkType {
+	type: 'menu' | 'none';
+	func: ((...args: any[]) => any) | null;
+	switchState?: never;
+}
+interface SwitchLinkType extends BaseLinkType {
+	type: 'switch';
+	func: (...args: any[]) => any;
+	switchState: boolean;
+}
+export type LinkType = MenuLinkType | SwitchLinkType;
+
+const logoutLinks: LinkType[] = [
+	{
+		name: 'Logout',
+		href: '/account/logout',
+		func: () => {},
+		icon: FiLogOut,
+		type: 'none',
+	},
+];
+const accountLinks: LinkType[] = [
+	{
+		name: 'Account Settings',
+		href: '/account/settings',
+		func: null,
+		icon: PiGear,
+		type: 'none',
+	},
+	{
+		name: 'Select Server',
+		href: '/player/select-server/',
+		func: null,
+		icon: HiOutlineServerStack,
+		type: 'none',
+	},
+	{
+		name: 'Dark Mode',
+		func: (state: boolean) => {},
+		icon: LuLamp,
+		type: 'switch',
+		switchState: false,
+	},
+];
 
 export default function Nav({
 	guildId,
 }: Readonly<{
 	guildId: string | null;
 }>) {
+	const { isDarkTheme, setDarkTheme } = useTheme();
 	const router = useRouter();
 	const { pushAlert } = useAlert();
 	const { logout } = useAuth();
@@ -39,33 +88,28 @@ export default function Nav({
 			pushAlert(String(err));
 		}
 	};
-
-	const profileLinks: ProfileLink[] = [
-		{
-			name: 'Settings',
-			href: '/account/settings',
-			func: null,
-			chevron: true,
-		},
-		{
-			name: 'Logout',
-			href: '/account/logout',
-			func: signOut,
-			chevron: false,
-		},
-	];
+	const switchTheme = () => {
+		setDarkTheme((prev) => !prev); // Turned off for now
+	};
+	const logoutLink = logoutLinks.find((link) => link.name == 'Logout');
+	const themeSwitcher = accountLinks.find((link) => link.name == 'Dark Mode');
+	if (logoutLink) logoutLink.func = signOut;
+	if (themeSwitcher) {
+		themeSwitcher.func = switchTheme;
+		themeSwitcher.switchState = isDarkTheme;
+	}
 
 	return (
-		<nav className="px-4 flex justify-between items-center" style={{ height: '64px' }}>
-			{guildId ? <TrackSearch guildId={guildId} /> : <div></div>}
+		<nav className="pr-4 flex justify-between items-center" style={{ height: '64px' }}>
+			{guildId ? <TrackSearch isDarkTheme={isDarkTheme} guildId={guildId} /> : <div></div>}
 			<div className="flex items-center">
-				<ProfileMenu profileLinks={profileLinks} />
+				<ProfileMenu profileLinks={[accountLinks, logoutLinks]} />
 			</div>
 		</nav>
 	);
 }
 
-function TrackSearch({ guildId }: { guildId: string }) {
+function TrackSearch({ guildId, isDarkTheme }: { guildId: string; isDarkTheme: boolean }) {
 	const [isAutocompleteVisible, setAutocompleteVisibility] = useState<boolean>(false);
 	const [searchHistory, setSearchHistory] = useState<UserSearchHistory[]>([]);
 	const searchParams = useSearchParams();
@@ -142,8 +186,12 @@ function TrackSearch({ guildId }: { guildId: string }) {
 	}, [inputVal.length, isAutocompleteVisible]);
 	const filteredSearchHistory = useMemo(() => {
 		const searchQuery = inputVal.toLowerCase().trim();
-		const filtered = searchHistory.filter((s) => s.search.toLowerCase().includes(searchQuery));
-		const sorted = filtered.sort((a, b) => {
+		const filtered = searchHistory.filter((s) => !s.deleted && s.search.toLowerCase().includes(searchQuery));
+		return filtered;
+	}, [inputVal]);
+	const filteredSortedSearchHistory = useMemo(() => {
+		const searchQuery = inputVal.toLowerCase().trim();
+		const sorted = filteredSearchHistory.sort((a, b) => {
 			const aStarts = a.search.toLowerCase().startsWith(searchQuery);
 			const bStarts = b.search.toLowerCase().startsWith(searchQuery);
 			if (bStarts && !aStarts) return 1;
@@ -153,16 +201,26 @@ function TrackSearch({ guildId }: { guildId: string }) {
 			return new Date(b.searchedAt).getTime() - new Date(a.searchedAt).getTime();
 		});
 		return sorted.slice(0, 7);
-	}, [inputVal, searchHistory]);
-	function removeSearch(id: string) {
-		console.log(id);
+	}, [filteredSearchHistory]);
+	async function removeSearch(id: string) {
+		try {
+			await removeUserSearchHistory(id);
+			setSearchHistory((prev) =>
+				prev.map((sh) => {
+					if (sh._id == id) sh.deleted = true;
+					return sh;
+				})
+			);
+		} catch (err) {
+			pushAlert(String(err));
+		}
 	}
 	return (
 		<form onSubmit={(e) => searchSubmit(e)} className="relative w-80 my-2">
 			<div className="relative w-full flex items-center">
 				<input
 					ref={searchInputRef}
-					onFocus={() => filteredSearchHistory.length > 0 && setAutocompleteVisibility(true)}
+					onFocus={() => filteredSortedSearchHistory.length > 0 && setAutocompleteVisibility(true)}
 					onInput={(e) => setInputVal((e.target as HTMLInputElement).value)}
 					value={inputVal}
 					placeholder="Search..."
@@ -170,16 +228,16 @@ function TrackSearch({ guildId }: { guildId: string }) {
 					name="query"
 					style={{ height: '42px' }}
 					autoComplete="off"
-					className="w-full px-3 pr-[38px] border border-transparent outline-0 items-center text-white-gray text-sm bg-blue-dark rounded-md focus:border-blue-light hover:border-blue-light transition-all duration-200"
+					className={`w-full px-3 pr-[38px] border border-transparent outline-0 items-center text-sm rounded-md focus:border-blue-light hover:border-blue-light transition-all duration-200 ${isDarkTheme ? 'bg-blue-dark text-white-gray' : 'bg-white-dark text-black'}`}
 				/>
 				<button title="Search" type="submit" className="z-10 absolute right-[8px]">
 					<svg
-						style={{ filter: 'drop-shadow(0 0 1px #111)' }}
+						style={{ filter: isDarkTheme ? 'drop-shadow(0 0 1px #111)' : 'drop-shadow(0 0 1px #aaa)' }}
 						stroke="currentColor"
 						fill="currentColor"
 						strokeWidth="0"
 						viewBox="0 0 24 24"
-						className="text-white-gray text-2xl"
+						className="text-white-default text-2xl"
 						height="1em"
 						width="1em"
 						xmlns="http://www.w3.org/2000/svg"
@@ -190,7 +248,7 @@ function TrackSearch({ guildId }: { guildId: string }) {
 			</div>
 			<div ref={autocompleteRef} className="absolute w-full bg-blue-dark z-30 rounded-md top-full mt-1 overflow-hidden">
 				{isAutocompleteVisible &&
-					filteredSearchHistory.map((search) => (
+					filteredSortedSearchHistory.map((search) => (
 						<UserSearch key={search._id} data={search} onRemove={removeSearch} onClick={() => searchFromHistory(search.search)} />
 					))}
 			</div>
@@ -229,7 +287,7 @@ function UserSearch({ data, onClick, onRemove }: { data: UserSearchHistory; onCl
 
 export function NavLogo() {
 	return (
-		<div className="flex w-full h-full items-center justify-center px-4">
+		<div className="flex h-full items-center justify-center px-4">
 			<Link href="/" title="Home">
 				<span>
 					<div className="flex items-center">
@@ -241,16 +299,16 @@ export function NavLogo() {
 	);
 }
 
-function ProfileMenu({ profileLinks }: { profileLinks: ProfileLink[] }) {
+function ProfileMenu({ profileLinks }: { profileLinks: LinkType[][] }) {
 	const { user, loading } = useAuth();
 	if (loading) return <ProfileSceleton />;
-	if (user) return <NavProfileMenu user={user} profileLinks={profileLinks} />;
+	if (user) return <NavProfileMenu user={user} links={profileLinks} />;
 	return <DiscordButton onClick={() => window.open(process.env.NEXT_PUBLIC_DISCORD_LOGIN_URL)} />;
 }
 
 function ProfileSceleton() {
 	return (
-		<div className="px-2">
+		<div className="relative px-2 -mt-1.5">
 			<div className="animate-pulse rounded-full w-9 h-9 bg-black-light"></div>
 		</div>
 	);

@@ -12,7 +12,7 @@ import { DbTrack } from '@/../types/tracks';
 import { useAlert } from '@/components/providers/Alert';
 import { dislikeTrack, likeTrack, playSoundcloudTrack } from '@/utils/tracks';
 import { PiQueue } from 'react-icons/pi';
-import { LibraryPageHeader } from '@/components/library/PageHeader';
+import { PageHeader } from '@/components/library/PageHeader';
 import { TfiTrash } from 'react-icons/tfi';
 
 export default function PlaylistPage({
@@ -83,13 +83,7 @@ export default function PlaylistPage({
 	return (
 		<div className="flex flex-col w-full px-3 pr-4 py-5">
 			{data && (
-				<LibraryPageHeader
-					path={['Playlists', data.name]}
-					title={data.name}
-					folder={false}
-					Buttons={memoizedHeaderButtons}
-					goBack={goToPlaylists}
-				/>
+				<PageHeader path={['Playlists', data.name]} title={data.name} folder={false} Buttons={memoizedHeaderButtons} goBack={goToPlaylists} />
 			)}
 			<div className="w-full py-4">{data && <PlaylistHeader playlist={data} />}</div>
 			<div className="w-full">
@@ -163,13 +157,21 @@ function PlaylistTrackButtons({
 		<>
 			<SmallIconButton
 				title="Like Song"
-				icon={<FaRegHeart className="text-xl" />}
+				icon={<FaRegHeart className="text-black-default dark:text-white-default text-xl" />}
 				activeIcon={<FaHeart className="text-xl text-blue-light" />}
 				onClick={likeTrackClick}
 				isActive={isLiked}
 			/>
-			<SmallIconButton title="Add to Queue" icon={<PiQueue className="text-xl" />} onClick={addToQueueClick} />
-			<SmallIconButton title="Remove Song" icon={<TfiTrash className="text-xl" />} onClick={removeTrackClick} />
+			<SmallIconButton
+				title="Add to Queue"
+				icon={<PiQueue className="text-black-default dark:text-white-default text-xl" />}
+				onClick={addToQueueClick}
+			/>
+			<SmallIconButton
+				title="Remove Song"
+				icon={<TfiTrash className="text-black-default dark:text-white-default text-xl" />}
+				onClick={removeTrackClick}
+			/>
 		</>
 	);
 }
@@ -177,7 +179,7 @@ function PlaylistTrackButtons({
 const PlaylistHeader = ({ playlist }: { playlist: Playlist }) => {
 	return (
 		<div>
-			<p className="text-white-gray">{playlist.description?.length ? playlist.description : 'No description.'}</p>
+			<p className="text-black-light dark:text-white-gray">{playlist.description?.length ? playlist.description : 'No description.'}</p>
 		</div>
 	);
 };

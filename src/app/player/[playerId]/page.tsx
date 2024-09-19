@@ -110,7 +110,7 @@ export default function Home({
 			<div className="w-full lg:w-auto flex-col p-2 flex-grow">
 				{!queueLoading && queue.length == 0 ? (
 					<div>
-						<p className="text-white-default">No tracks. You should start searching.</p>
+						<p className="text-black-default dark:text-white-default">No tracks. You should start searching.</p>
 					</div>
 				) : (
 					<PlayerQueue
@@ -245,11 +245,11 @@ function PlayerQueueTrack({
 				<div className="flex flex-col pl-2.5 justify-around w-[280] flex-grow flex-shrink" style={{ flexBasis: '280px' }}>
 					<p
 						title={track.data.title}
-						className="text-white-gray text-base font-bold text-nowrap whitespace-nowrap text-ellipsis overflow-hidden"
+						className="text-black-light dark:text-white-gray text-base font-bold text-nowrap whitespace-nowrap text-ellipsis overflow-hidden"
 					>
 						{track.data.title}
 					</p>
-					<div className="flex text-sm items-center text-white-gray gap-1">
+					<div className="flex text-sm items-center text-black-light dark:text-white-gray gap-1">
 						{track.authors.map((author, ind) => (
 							<span key={ind}>
 								<a
@@ -324,17 +324,20 @@ function TrackHeader({
 				<SmallIconButton
 					className="w-11 h-11"
 					title={track.isLiked ? 'Dislike Song' : 'Like Song'}
-					icon={<FaRegHeart className="text-2xl" style={{ fontSize: '1.375rem' }} />}
+					icon={<FaRegHeart className="text-black-default dark:text-white-default text-2xl" style={{ fontSize: '1.375rem' }} />}
 					activeIcon={<FaHeart className="text-2xl text-blue-light" />}
 					onClick={likeTrackClick}
 					isActive={track.isLiked}
 				/>
 			</div>
 			<div className="px-1">
-				<p title={track.data.title} className="text-white-default font-bold text-center text-nowrap text-ellipsis overflow-hidden text-lg">
+				<p
+					title={track.data.title}
+					className="text-black-default dark:text-white-default font-bold text-center text-nowrap text-ellipsis overflow-hidden text-lg"
+				>
 					{track.data.title}
 				</p>
-				<p className="text-white-gray text-center text-sm py-1">
+				<p className="text-black-light dark:text-white-gray text-center text-sm py-1">
 					{track.authors.map((author, ind) => (
 						<span key={author.permalink}>
 							<a title={author.username} href={author.permalink} target="_blank">

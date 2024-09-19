@@ -3,15 +3,21 @@
 @tailwind utilities;
 
 ::-webkit-scrollbar {
-    width: 6px;
+	width: 6px;
 }
-  
+
 ::-webkit-scrollbar-thumb {
-    background-color: #484853;
-    border-radius: 4px;
+	background-color: #484853;
+	border-radius: 4px;
 }
-  
+
 ::-webkit-scrollbar-track {
-    background-color: #25252b;
-    border-radius: 4px;
+	background-color: #25252b;
+	border-radius: 4px;
+}
+
+:focus-visible {
+	appearance: none;
+	border-style: solid;
+	outline: none;
 }

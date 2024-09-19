@@ -77,11 +77,11 @@ export default function AddToPlaylistMenu({ track, playlists, setPlaylists, clas
 				onClick={() => setIsActive((prev) => !prev)}
 				className="w-11 h-11"
 				title="Add to Playlist"
-				icon={<RiPlayListAddLine className="text-lg" />}
+				icon={<RiPlayListAddLine className="text-black-default dark:text-white-default text-lg" />}
 			/>
 			{isActive && (
 				<div
-					className={`absolute overflow-hidden rounded-lg bg-blue-grayish z-50 w-56 shadow-lg ${position.horizontal === 'right' ? 'left-1/2 -translate-x-1/4' : 'right-0'} ${position.vertical == 'top' ? '-top-1 -translate-y-full' : '-bottom-1 translate-y-full'}`}
+					className={`absolute overflow-hidden rounded-lg bg-white-default dark:bg-blue-grayish z-50 w-56 shadow-lg ${position.horizontal === 'right' ? 'left-1/2 -translate-x-1/4' : 'right-0'} ${position.vertical == 'top' ? '-top-1 -translate-y-full' : '-bottom-1 translate-y-full'}`}
 				>
 					<div className={`relative w-full h-full flex flex-nowrap transition-transform ${openWindow === 'create' && '-translate-x-full'}`}>
 						<PlaylistList
@@ -163,12 +163,12 @@ function PlaylistList({
 		<div className="relative w-full flex flex-col flex-shrink-0 px-2">
 			<div className="flex items-center px-2 pt-3 pb-1 gap-2">
 				<button onClick={onClose} className="p-1" title="Close">
-					<IoClose className="text-white-default hover:text-white-gray transition-all active:opacity-80 text-lg" />
+					<IoClose className="text-black-default hover:text-black-light dark:text-white-default dark:hover:text-white-gray transition-all active:opacity-80 text-lg" />
 				</button>
-				<h3 className="text-white-default text-sm">My Playlist</h3>
+				<h3 className="text-black-default dark:text-white-default text-sm">My Playlist</h3>
 			</div>
 			<PlaylistInput input={searchInput} setInput={setSearchInput} placeholder="Search..." />
-			<div className="h-[200px] pb-1 overflow-hidden w-full">
+			<div className="h-[200px] pb-1 overflow-hidden w-full text-black-default dark:text-white-default">
 				<div className="flex flex-col px-2 py-1 h-full overflow-y-auto">
 					<div
 						onClick={createNewPlaylist}
@@ -181,7 +181,7 @@ function PlaylistList({
 					</div>
 					{filteredPlaylists.length == 0 ? (
 						<div className="w-full">
-							<p className="text-white-gray text-sm text-center py-2">No Matches.</p>
+							<p className="text-black-light dark:text-white-gray text-sm text-center py-2">No Matches.</p>
 						</div>
 					) : (
 						filteredPlaylists.map((playlist) => <PlaylistMenuItem playlist={playlist} onAddPlaylist={addToPlaylist} key={playlist._id} />)
@@ -204,7 +204,7 @@ function PlaylistInput({ input, setInput, placeholder }: PlaylistInputProps) {
 				value={input}
 				onInput={(e) => setInput((e.target as HTMLInputElement).value)}
 				type="text"
-				className="outline-0 text-white-default text-sm px-2 py-1 border-1 border-transparent focus:border-blue-sky rounded bg-[#2b2b36] w-full"
+				className="outline-0 text-black-default dark:text-white-default text-sm px-2 py-1 border-1 border-transparent focus:border-blue-sky rounded bg-white-dark dark:bg-[#2b2b36] w-full"
 				placeholder={placeholder}
 			/>
 		</div>
@@ -235,7 +235,9 @@ function PlaylistMenuItem({
 		<button title={`Add Song to "${playlist.name}"`} onClick={onClick} disabled={isLoading || playlist.isAdded}>
 			<span>
 				<div className="flex justify-between items-center py-1.5 px-2 cursor-pointer rounded bg-white-gray transition-all bg-opacity-0 hover:bg-opacity-5 active:bg-opacity-10">
-					<p className="text-white-gray overflow-hidden text-nowrap whitespace-nowrap text-ellipsis text-sm">{playlist.name}</p>
+					<p className="text-black-light dark:text-white-gray overflow-hidden text-nowrap whitespace-nowrap text-ellipsis text-sm">
+						{playlist.name}
+					</p>
 					<Icon />
 				</div>
 			</span>

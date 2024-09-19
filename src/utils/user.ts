@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import apiRequest, { ResponseDataType } from './apiRequest';
 import { DiscordGuild } from '../../types/discord';
 import { Playlist, User, UserSearchHistory } from '../../types/user';
@@ -160,13 +160,24 @@ export async function getUserSearchHistory() {
 	if (status == 200 && data.results) return data.results as UserSearchHistory[];
 	throw data.error;
 }
+export async function removeUserSearchHistory(id: string) {
+	const { status, data } = await apiRequest(
+		`${process.env.NEXT_PUBLIC_API_URL!}/api/v1/tracks/search/history/${id}`,
+		{ method: 'DELETE' },
+		ResponseDataType.JSON,
+		true
+	);
+	if (status == 200) return true;
+	throw data.error;
+}
 
 export function useUserGuilds() {
 	const [data, setData] = useState<DiscordGuild[]>([]);
+	const [error, setError] = useState<any>(null);
 	const [loading, setLoading] = useState(true);
 	useEffect(() => {
 		(async () => {
-			const { status, data } = await apiRequest(
+			const { status, data, errorData } = await apiRequest(
 				`${process.env.NEXT_PUBLIC_API_URL!}/api/v1/users/me/guilds`,
 				{ method: 'GET', cache: 'no-cache' },
 				ResponseDataType.JSON,
@@ -174,12 +185,16 @@ export function useUserGuilds() {
 			);
 			if (status == 200 && data.status == 'ok') {
 				const results = data.results as DiscordGuild[];
+				setError(null);
 				setData(results);
+			} else {
+				if (data.error) setError(data.error);
+				else setError(errorData);
 			}
 			setLoading(false);
 		})();
 	}, []);
-	return { data, loading };
+	return { data, error, loading };
 }
 
 export function useUserPlaylists() {
