@@ -1,4 +1,3 @@
-'use client';
 import { createContext, FormEvent, ReactNode, useCallback, useContext, useRef, useState } from 'react';
 import { IoClose } from 'react-icons/io5';
 import { DangerButton, PrimaryButton, SmallIconButton } from '../Buttons';
@@ -27,7 +26,8 @@ export function PopupProvider({ children }: { children: ReactNode }) {
 	const [visibility, setVisibility] = useState<'visible' | 'hidden'>('hidden');
 	const popupRef = useRef<HTMLDivElement | null>(null);
 	const hidePopup = useCallback(() => {
-		popupRef.current?.classList.add('animate-hide');
+		popupRef.current?.classList.add('animate-fasthide');
+		popupRef.current?.classList.add('dark:animate-hide');
 	}, []);
 	const showPopup = useCallback(() => {
 		setVisibility('visible');
@@ -36,8 +36,11 @@ export function PopupProvider({ children }: { children: ReactNode }) {
 		<PopupContext.Provider value={{ setPopup, setVisibility, hidePopup, showPopup }}>
 			{visibility === 'visible' && (
 				<div ref={popupRef} onAnimationEnd={() => setVisibility('hidden')}>
-					<div onClick={() => hidePopup()} className="fixed z-40 w-screen h-screen left-0 top-0 bg-black-default bg-opacity-60"></div>
-					<div className="fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">{PopupContent}</div>
+					<div
+						onClick={() => hidePopup()}
+						className="fixed z-50 w-screen h-screen left-0 top-0 bg-[#a2a2b1] dark:bg-black-default bg-opacity-70 dark:bg-opacity-70"
+					></div>
+					<div className="fixed z-[60] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">{PopupContent}</div>
 				</div>
 			)}
 			{children}
@@ -47,14 +50,14 @@ export function PopupProvider({ children }: { children: ReactNode }) {
 
 export const DefaultPopupContainer = ({ children }: { children?: ReactNode }) => (
 	<div className="relative w-screen sm:min-w-[420px] sm:w-auto drop-shadow-md">
-		<div className="relative flex flex-col p-4 px-6 w-full rounded-md bg-blue-grayish">{children}</div>
+		<div className="relative flex flex-col p-4 px-6 w-full rounded-md bg-white-default dark:bg-blue-grayish">{children}</div>
 	</div>
 );
 
 export const DefaultPopupHeader = ({ title, onClose }: { title?: string; onClose: () => any }) => (
 	<div className="flex justify-between items-center">
-		<h2 className="text-white-default font-normal text-lg">{title}</h2>
-		<SmallIconButton title={'Close'} icon={<IoClose className="text-2xl" />} onClick={onClose} />
+		<h2 className="text-black-light dark:text-white-gray font-normal text-lg">{title}</h2>
+		<SmallIconButton title={'Close'} icon={<IoClose className="text-2xl text-black-light dark:text-white-gray" />} onClick={onClose} />
 	</div>
 );
 
@@ -109,19 +112,19 @@ export const PlaylistPopupContent = ({
 					<input
 						value={newPlaylistName}
 						onInput={(e) => setNewPlaylistName((e.target as HTMLInputElement).value)}
-						className="bg-[#2b2b36] border-1 border-transparent focus:border-blue-light text-white-default text-base rounded !outline-none py-2 px-3 font-thin mb-2 mt-0.5"
+						className="bg-white-dark dark:bg-black-hover border-1 border-transparent focus:border-blue-light text-black-light dark:text-white-default text-base rounded !outline-none py-2 px-3 font-thin mb-2 mt-0.5"
 						placeholder="Playlist name"
 						type="text"
 						id="playlistName"
 						name="playlist-name"
 					/>
-					<label htmlFor="playlistDesc" className="text-white-gray text-sm opacity-70">
+					<label htmlFor="playlistDesc" className="text-black-light dark:text-white-gray text-sm opacity-50 dark:opacity-70">
 						Optional
 					</label>
 					<input
 						value={newPlaylistDescription}
 						onInput={(e) => setNewPlaylistDescription((e.target as HTMLInputElement).value)}
-						className="bg-[#2b2b36] border-1 border-transparent focus:border-blue-light text-white-default text-base rounded !outline-none py-2 px-3 font-thin mb-2 mt-0.5"
+						className="bg-white-dark dark:bg-black-hover border-1 border-transparent focus:border-blue-light text-black-light dark:text-white-default text-base rounded !outline-none py-2 px-3 font-thin mb-2 mt-0.5"
 						placeholder="Playlist description"
 						type="text"
 						id="playlistDesc"

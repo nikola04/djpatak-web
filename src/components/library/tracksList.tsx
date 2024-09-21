@@ -96,7 +96,7 @@ function Track({
 	}, []);
 	return (
 		<div
-			className={`group flex justify-between w-full p-2 my-0.5 rounded-lg transition-all ${!isPlayingNow ? 'hover:bg-white-hover dark:hover:bg-black-hover dark:hover:shadow-lg' : 'bg-blue-light bg-opacity-15'}`}
+			className={`group flex justify-between w-full p-2 my-0.5 rounded-lg transition-all ${!isPlayingNow ? 'hover:bg-white-hover dark:hover:bg-black-hover dark:hover:bg-opacity-55 dark:hover:shadow-lg' : 'bg-blue-light bg-opacity-15'}`}
 		>
 			<div className="flex w-full">
 				<div
@@ -155,12 +155,15 @@ function Track({
 function TrackSceleton() {
 	return (
 		<div className="flex w-full p-2 my-0.5">
-			<div className="relative rounded overflow-hidden bg-blue-grayish animate-pulse" style={{ width: '48px', height: '48px' }}></div>
+			<div
+				className="relative rounded overflow-hidden bg-white-dark dark:bg-blue-grayish animate-pulse"
+				style={{ width: '48px', height: '48px' }}
+			></div>
 			<div className="flex flex-col pl-2.5 justify-around" style={{ height: '48px' }}>
-				<div className="h-4 w-96 bg-blue-grayish animate-pulse"></div>
-				<div className="flex text-sm text-white-gray gap-2">
-					<div className="h-3 w-28 bg-blue-grayish animate-pulse"></div>
-					<div className="h-3 w-10 bg-blue-grayish animate-pulse"></div>
+				<div className="h-4 w-96 bg-white-dark dark:bg-blue-grayish animate-pulse"></div>
+				<div className="flex text-sm gap-2">
+					<div className="h-3 w-28 bg-white-dark dark:bg-blue-grayish animate-pulse"></div>
+					<div className="h-3 w-10 bg-white-dark dark:bg-blue-grayish animate-pulse"></div>
 				</div>
 			</div>
 		</div>

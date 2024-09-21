@@ -83,12 +83,15 @@ export default function SideNav({
 	const pathname = usePathname();
 	const enabledLinkGroups = linksGrouped.filter((group) => allowedMenuGroups.includes(group.id));
 	return (
-		<div className="px-3 py-4 md:px-4 flex flex-col">
-			{allowedMenuGroups.includes(MenuGroup.GuildSelector) &&
-				(loading ? <GuildSelectorSceleton /> : <GuildSelector userGuilds={userGuilds} selectedId={guildId} />)}
+		<div className="py-4 flex flex-col">
+			{allowedMenuGroups.includes(MenuGroup.GuildSelector) && (
+				<div className="py-3">{loading ? <GuildSelectorSceleton /> : <GuildSelector userGuilds={userGuilds} selectedId={guildId} />}</div>
+			)}
 			{enabledLinkGroups.map((linkGroup, ind) => (
-				<div key={ind} className="p-2 flex flex-col">
-					<p className={`uppercase font-bold text-sm py-2 text-black-light dark:text-white-gray`}>{linkGroup.name}</p>
+				<div key={ind} className="py-2 flex flex-col">
+					<p className={`uppercase text-xs px-6 text-black-light text-opacity-60 dark:text-white-gray dark:text-opacity-60`}>
+						{linkGroup.name}
+					</p>
 					<div className="flex flex-col py-2">
 						{linkGroup.links.map((link, ind) => (
 							<NavItem key={ind} guildId={guildId} pathname={pathname} data={link} />
@@ -128,22 +131,22 @@ function GuildSelector({
 		<div ref={profileMenuRef} className="m-2 relative">
 			<div
 				onClick={() => setOpen(!open)}
-				className={`relative flex md:w-52 w-48 overflow-hidden border border-transparent items-center rounded-md px-2 py-1.5 cursor-pointer hover:border-blue-light transition-all duration-200 active:ring-blue ring-[2px] ${open ? 'ring-blue' : 'ring-transparent'} dark:bg-blue-dark dark:text-white-gray bg-white-dark text-black-light`}
+				className={`relative flex w-[208px] overflow-hidden border border-transparent items-center rounded-xl px-2 py-1.5 cursor-pointer hover:border-blue-light transition-all duration-200 active:ring-blue ring-[2px] ${open ? 'ring-blue' : 'ring-transparent'} dark:bg-blue-dark dark:text-white-gray bg-white-dark text-black-light`}
 			>
 				<div style={{ padding: '2px' }}>
-					<GuildIcon guild={selectedGuild} size={24} />
+					<GuildIcon guild={selectedGuild} className="bg-black-default dark:bg-transparent" size={24} />
 				</div>
 				<p className="px-2 text-base text-nowrap text-ellipsis overflow-hidden" title={selectedGuild.name}>
 					{selectedGuild.name}
 				</p>
 			</div>
 			{open && (
-				<div className="absolute left-0 p-1.5 mt-2 w-52 rounded-lg z-20 overflow-hidden bg-white-default dark:bg-blue-grayish shadow-md transition-colors duration-150">
+				<div className="absolute left-0 p-1.5 mt-2 w-52 rounded-xl z-20 overflow-hidden bg-white-default dark:bg-blue-dark shadow-md transition-colors duration-150">
 					{userGuilds.map((guild: DiscordGuild, ind) => (
 						<div
 							onClick={() => router.push('/player/' + guild.id)}
 							key={ind}
-							className="flex w-full items-center top-0 p-1 hover:bg-white-hover active:bg-white-active rounded-md cursor-pointer transition-colors duration-150"
+							className="flex w-full items-center top-0 p-1 hover:bg-white-hover dark:hover:bg-blue-light dark:hover:bg-opacity-5 active:bg-white-active dark:active:bg-opacity-10 rounded-lg cursor-pointer transition-colors duration-150"
 						>
 							<div style={{ padding: '2px' }}>
 								<GuildIcon guild={guild} className="bg-black-default dark:bg-transparent" size={24} />
@@ -153,7 +156,7 @@ function GuildSelector({
 							</p>
 						</div>
 					))}
-					<div className="p-1 border-b border-white-gray dark:border-gray"></div>
+					<div className="p-1 border-b border-white-gray dark:border-black-default"></div>
 					<div className="mt-2 flex w-full items-center top-0 p-1 hover:bg-white-hover active:bg-white-active rounded-md cursor-pointer transition-all">
 						<div className="p-1">
 							<BsPlusCircle className="w-5 h-5 text-black-light dark:text-white-gray text-sm" />
@@ -169,7 +172,7 @@ function GuildSelector({
 function GuildSelectorSceleton() {
 	return (
 		<div className="m-2 flex flex-col">
-			<div className="flex items-center dark:bg-blue-dark bg-white-dark rounded-md px-2 py-1.5 w-48 md:w-52 border border-transparent">
+			<div className="flex items-center dark:bg-blue-dark bg-white-dark rounded-xl px-2 py-1.5 w-full border border-transparent">
 				<div style={{ padding: '2px' }}>
 					<div
 						className="rounded-full dark:bg-black-default bg-white-default animate-pulse"
@@ -194,10 +197,10 @@ function NavItem({ data, guildId, pathname }: { data: LinkType; guildId: string;
 		<Link
 			title={data.name}
 			href={url}
-			className={`my-0.5 py-1.5 rounded-md min-w-40 px-2 text-black-light dark:text-white-default ${!isActive(url) && 'hover:bg-white-hover dark:hover:bg-blue-grayish active:bg-white-active dark:active:bg-black-hover'} transition-all ${isActive(url) && '!bg-blue-light !text-white-default'}`}
+			className={`my-0.5 py-[7px] rounded-r-2xl w-56 px-2 dark:text-white-gray text-black-light ${!isActive(url) && 'hover:bg-white-hover dark:hover:bg-blue-grayish active:bg-white-active dark:active:bg-black-hover'} active:bg-opacity-90 transition-all bg-opacity-100 ${isActive(url) && 'bg-blue-active !text-white-default dark:!text-black-light'}`}
 		>
 			<span>
-				<div className="flex items-center">
+				<div className="flex items-center px-4">
 					<Icon className="text-lg" />
 					<p className="px-2.5">{data.name}</p>
 				</div>

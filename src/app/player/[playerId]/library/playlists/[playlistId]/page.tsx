@@ -188,16 +188,16 @@ const PlaylistPageSceleton = () => (
 	<div className="flex flex-col w-full px-3 pr-4 py-5">
 		<div className="flex items-center justify-between w-full">
 			<div>
-				<p className="text-white-default opacity-40 text-sm py-0.5">Playlists /</p>
+				<p className="text-black-default dark:text-white-default opacity-40 text-sm py-0.5">Playlists /</p>
 				<div className="flex items-center my-3">
 					<div className="px-2 mr-1">
-						<div className="h-6 w-6 rounded bg-blue-grayish animate-pulse"></div>
+						<div className="h-6 w-6 rounded bg-white-dark dark:bg-blue-grayish animate-pulse"></div>
 					</div>
-					<div className="h-6 w-64 rounded bg-blue-grayish animate-pulse"></div>
+					<div className="h-6 w-64 rounded bg-white-dark dark:bg-blue-grayish animate-pulse"></div>
 				</div>
 			</div>
 			<div className="mr-2 place-self-start">
-				<div className="w-[74px] h-[38px] bg-blue-light rounded animate-pulse"></div>
+				<div className="w-[74px] h-[38px] bg-white-dark dark:bg-blue-light rounded animate-pulse"></div>
 			</div>
 		</div>
 		<div className="w-full"></div>

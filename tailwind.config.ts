@@ -35,6 +35,7 @@ const config: Config = {
 				shakeX: 'shakeX .25s ease-in',
 				dropError: 'dropError .35s ease forwards',
 				hide: 'fadeHide .2s ease forwards',
+				fasthide: 'fadeHide 0s ease forwards',
 				show: 'fadeShow .2s ease forwards',
 				progressLong: 'shrink 30s ease forwards',
 				progressShort: 'shrink 7s ease forwards',
@@ -72,8 +73,8 @@ const config: Config = {
 			backgroundColor: {
 				white: {
 					default: '#ffffff',
-					gray: '#f7f7f7',
-					dark: '#e9e9e9',
+					gray: '#f6f6f6',
+					dark: '#e5e5e5',
 					hover: '#ececef',
 					active: '#e2e2f1',
 				},

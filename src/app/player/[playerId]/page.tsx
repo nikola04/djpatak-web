@@ -165,12 +165,15 @@ function PlayerQueue({
 function PlayerQueueTrackSceleton() {
 	return (
 		<div className="flex w-full p-2 my-0.5">
-			<div className="relative rounded overflow-hidden bg-blue-grayishanimate-pulse" style={{ width: '48px', height: '48px' }}></div>
+			<div
+				className="relative rounded overflow-hidden bg-white-dark dark:bg-blue-grayish animate-pulse"
+				style={{ width: '48px', height: '48px' }}
+			></div>
 			<div className="flex flex-col pl-2.5 justify-around" style={{ height: '48px' }}>
-				<div className="h-4 w-96 bg-blue-grayish animate-pulse"></div>
-				<div className="flex text-sm text-white-gray gap-2">
-					<div className="h-3 w-28 bg-blue-grayish animate-pulse"></div>
-					<div className="h-3 w-10 bg-blue-grayish animate-pulse"></div>
+				<div className="h-4 w-96 bg-white-dark dark:bg-blue-grayish animate-pulse"></div>
+				<div className="flex text-sm gap-2">
+					<div className="h-3 w-28 bg-white-dark dark:bg-blue-grayish animate-pulse"></div>
+					<div className="h-3 w-10 bg-white-dark dark:bg-blue-grayish animate-pulse"></div>
 				</div>
 			</div>
 		</div>
@@ -217,7 +220,7 @@ function PlayerQueueTrack({
 	}, []);
 	return (
 		<div
-			className={`group flex justify-between w-full p-2 my-0.5 rounded-lg transition-all ${!current ? 'hover:bg-blue-grayish hover:shadow-lg' : 'bg-blue-light bg-opacity-15'}`}
+			className={`group flex justify-between w-full p-2 my-0.5 rounded-lg transition-all ${!current ? 'hover:bg-white-hover dark:hover:bg-blue-grayish dark:hover:shadow-lg' : 'bg-blue-light bg-opacity-15'}`}
 		>
 			<div className="flex w-full">
 				<div
@@ -304,7 +307,7 @@ function TrackHeader({
 	if (track.data.thumbnail) track.data.thumbnail = track.data.thumbnail.replace('-large', '-t500x500');
 	return (
 		<div className="relative lg:sticky lg:top-0 p-2 w-full lg:max-w-64 xl:max-w-80 max-w-80 flex flex-col">
-			<div className="relative flex-shrink-0 w-full overflow-hidden rounded hover:shadow-xl transition-all duration-200 bg-black-light">
+			<div className="relative flex-shrink-0 w-full overflow-hidden rounded-xl hover:shadow-xl transition-all duration-200 bg-black-light">
 				{track.data.thumbnail ? (
 					<img src={track.data.thumbnail} alt="Track Banner" className="min-w-full aspect-square" />
 				) : (
@@ -355,10 +358,10 @@ function TrackHeader({
 function TrackHeaderSceleton() {
 	return (
 		<div className="p-2 w-80">
-			<div className="w-full overflow-hidden aspect-square bg-blue-grayish animate-pulse"></div>
+			<div className="w-full overflow-hidden aspect-square bg-white-dark dark:bg-blue-grayish animate-pulse"></div>
 			<div className="px-1 py-5 flex flex-col items-center justify-center">
-				<div className="bg-blue-grayish animate-pulse w-64 h-4"></div>
-				<div className="bg-blue-grayish animate-pulse w-32 h-3 my-3.5"></div>
+				<div className="bg-white-dark dark:bg-blue-grayish animate-pulse w-64 h-4"></div>
+				<div className="bg-white-dark dark:bg-blue-grayish animate-pulse w-32 h-3 my-3.5"></div>
 			</div>
 		</div>
 	);

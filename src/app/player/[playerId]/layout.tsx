@@ -24,7 +24,9 @@ export default function RootLayout({
 			<Nav guildId={playerId} />
 			<SideNav guildId={playerId} allowedMenuGroups={['guildSelector', 'library', 'player']} />
 			<div className="w-auto h-auto relative overflow-x-hidden overflow-y-auto mb-1">{children}</div>
-			<PlayerControlls guildId={playerId} className="col-span-2 border-t border-black-light" />
+			<div className="col-span-2 p-4">
+				<PlayerControlls guildId={playerId} className="col-span-2 rounded-xl" />
+			</div>
 		</div>
 	);
 }

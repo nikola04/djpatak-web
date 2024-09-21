@@ -17,6 +17,7 @@ import { capitilizeWord, isParentOf } from '@/utils/frontend';
 import { SmallIconButton } from '../Buttons';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import { DbTrack, QueueTrack } from '../../../types/tracks';
+import { FaBackwardStep, FaForwardStep, FaPause, FaPlay } from 'react-icons/fa6';
 export default function PlayerControlls({ className, guildId }: { className: string; guildId: string }) {
 	const { loading, data, setData, status, setStatus, playerPreferences, setPlayerPreferences } = useCurrentTrack(guildId);
 	const { socket, ready } = useSockets();
@@ -122,17 +123,17 @@ export default function PlayerControlls({ className, guildId }: { className: str
 	if (!data) return null;
 
 	return (
-		<div className={`${className} flex bg-black-default z-10 shadow-md items-center px-6`} style={{ height: '80px' }}>
+		<div className={`${className} flex bg-black-default dark:bg-blue-dark z-10 shadow-md items-center p-4`}>
 			<div className="flex items-center gap-7 w-full">
 				<TrackUser loading={loading} data={data} />
 				<div className="flex items-center gap-2">
-					<PlayerButton title="Play Previous" icon={IoIosSkipBackward} onClick={playPrev} style={{ fontSize: '22px' }} />
+					<PlayerButton title="Play Previous" icon={FaBackwardStep} onClick={playPrev} style={{ fontSize: '21px' }} />
 					{status == 'playing' ? (
-						<PlayerButton title="Pause" icon={IoIosPause} onClick={pausePress} style={{ fontSize: '28px' }} />
+						<PlayerButton title="Pause" icon={FaPause} onClick={pausePress} style={{ fontSize: '21px' }} />
 					) : (
-						<PlayerButton title="Resume" icon={IoIosPlay} onClick={resumePress} style={{ fontSize: '28px' }} />
+						<PlayerButton title="Resume" icon={FaPlay} onClick={resumePress} style={{ fontSize: '20px', marginLeft: '2px' }} />
 					)}
-					<PlayerButton title="Play Next" icon={IoIosSkipForward} onClick={playNext} style={{ fontSize: '22px' }} />
+					<PlayerButton title="Play Next" icon={FaForwardStep} onClick={playNext} style={{ fontSize: '21px' }} />
 					<PlayerRepeatButton onClick={repeatPress} repeat={playerPreferences?.repeat} />
 				</div>
 				<div className="ml-auto flex items-center">
@@ -257,20 +258,20 @@ function TrackUser({ loading, data: trackData }: { loading: boolean; data: Queue
 	if (loading) return <TrackSceleton />;
 	if (trackData)
 		return (
-			<div className="grid gap-3 w-64 overflow-hidden" style={{ gridTemplateColumns: 'auto 1fr' }}>
-				<div className="w-12 h-12 rounded overflow-hidden">
+			<div className="flex gap-[13px] w-[290px] overflow-hidden">
+				<div className="w-[45px] h-[45px] rounded overflow-hidden flex-shrink-0">
 					{trackData.data.thumbnail ? (
 						<img alt="Track Thumbnail" src={trackData.data.thumbnail} width={48} height={48} />
 					) : (
 						<div className="w-full h-full bg-black-light"></div>
 					)}
 				</div>
-				<div className="text-white-gray w-48 flex flex-col justify-around">
+				<div className="text-white-gray w-[230px] flex flex-col justify-around">
 					<a
 						href={trackData.data.permalink}
 						title={trackData.data.title}
 						target="_blank"
-						className="font-bold text-ellipsis text-nowrap overflow-hidden hover:underline leading-3 text-base"
+						className="text-ellipsis text-nowrap overflow-hidden hover:underline leading-3 text-base"
 					>
 						{trackData.data.title}
 					</a>
@@ -280,7 +281,7 @@ function TrackUser({ loading, data: trackData }: { loading: boolean; data: Queue
 								title={author.username}
 								href={author.permalink}
 								target="_blank"
-								className="text-ellipsis text-nowrap overflow-hidden hover:underline leading-3 text-sm"
+								className="font-light text-ellipsis text-nowrap overflow-hidden hover:underline leading-3 text-sm"
 							>
 								{author.username}
 							</a>
@@ -321,7 +322,7 @@ const PlayerButton = forwardRef<
 			ref={ref}
 			title={title}
 			onClick={() => onClick()}
-			className="hover:bg-white-hover active:bg-white-active w-11 h-11 flex items-center justify-center rounded-full transition-all duration-150"
+			className="hover:bg-white-hover active:bg-white-active dark:hover:bg-black-hover dark:active:bg-black-active w-11 h-11 flex items-center justify-center rounded-full transition-all duration-150"
 		>
 			<Icon className={active ? 'text-blue-light transition-all' : 'text-white-gray transition-all'} style={style} />
 		</button>

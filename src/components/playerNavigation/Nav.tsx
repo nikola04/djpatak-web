@@ -228,16 +228,15 @@ function TrackSearch({ guildId, isDarkTheme }: { guildId: string; isDarkTheme: b
 					name="query"
 					style={{ height: '42px' }}
 					autoComplete="off"
-					className={`w-full px-3 pr-[38px] border border-transparent outline-0 items-center text-sm rounded-md focus:border-blue-light hover:border-blue-light transition-all duration-200 ${isDarkTheme ? 'bg-blue-dark text-white-gray' : 'bg-white-dark text-black'}`}
+					className={`w-full px-3.5 pr-[38px] border border-transparent outline-0 items-center text-sm rounded-xl focus:border-blue-light hover:border-blue-light transition-all duration-200 ${isDarkTheme ? 'bg-blue-dark text-white-gray' : 'bg-white-dark text-black'}`}
 				/>
-				<button title="Search" type="submit" className="z-10 absolute right-[8px]">
+				<button title="Search" type="submit" className="z-10 absolute right-[10px]">
 					<svg
-						style={{ filter: isDarkTheme ? 'drop-shadow(0 0 1px #111)' : 'drop-shadow(0 0 1px #aaa)' }}
 						stroke="currentColor"
 						fill="currentColor"
 						strokeWidth="0"
 						viewBox="0 0 24 24"
-						className="text-white-default text-2xl"
+						className="text-black-light dark:text-white-default text-[22px]"
 						height="1em"
 						width="1em"
 						xmlns="http://www.w3.org/2000/svg"

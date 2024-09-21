@@ -75,7 +75,7 @@ const Playlist = ({ playerId, playlist }: { playerId: string; playlist: Playlist
 	const onClick = () => router.push(`playlists/${playlist._id}`);
 	return (
 		<div className="flex flex-col group">
-			<div className="flex flex-col justify-end w-full aspect-square bg-white-default dark:bg-blue-grayish rounded transition-colors duration-150">
+			<div className="flex flex-col justify-end w-full aspect-square bg-white-default dark:bg-blue-grayish rounded transition-colors">
 				<div className="flex flex-grow cursor-pointer" onClick={onClick}></div>
 				<div className="flex flex-shrink-0 items-center w-full opacity-0 group-hover:opacity-100 transition-opacity duration-150">
 					<SmallIconButton
@@ -100,9 +100,9 @@ const Playlist = ({ playerId, playlist }: { playerId: string; playlist: Playlist
 
 const PlaylistSceleton = () => (
 	<div className="flex flex-col">
-		<div className="w-full aspect-square bg-blue-grayish rounded">
+		<div className="w-full aspect-square bg-white-dark dark:bg-blue-grayish rounded">
 			<div className="w-full h-full"></div>
 		</div>
-		<div className="w-3/4 bg-blue-grayish my-3 h-3 rounded"></div>
+		<div className="w-3/4 bg-white-dark dark:bg-blue-grayish my-3 h-3 rounded"></div>
 	</div>
 );
