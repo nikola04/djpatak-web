@@ -11,7 +11,7 @@ interface PageHeaderProps extends HTMLAttributes<HTMLDivElement> {
 }
 export const PageHeader = ({ title, path, folder = true, Buttons, goBack, ...restProps }: PageHeaderProps) => {
 	return (
-		<div {...restProps} className={`flex w-full items-center justify-between ${restProps.className}`}>
+		<div {...restProps} className={`flex w-full items-center justify-between ${restProps.className} p-2`}>
 			<div>
 				<p className="text-black-light dark:text-white-gray opacity-40 text-sm py-0.5">
 					{path.join(' / ')} {folder && '/'}

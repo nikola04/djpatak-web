@@ -31,8 +31,8 @@ export default function NavProfileMenu({ links, user }: { links: LinkType[][]; u
 				<img src={user.image} width={36} height={36} alt={'Profile Image'} />
 			</button>
 			{showProfile && (
-				<div className="absolute right-0 mt-2 w-64 rounded-lg z-20 overflow-hidden dark:bg-blue-grayish bg-white-default transition-colors duration-150 shadow-md">
-					<div className="m-1 rounded-md hover:bg-white-hover dark:hover:bg-black-hover active:bg-white-active dark:active:bg-black-active group overflow-hidden transition-background duration-150">
+				<div className="absolute right-0 mt-2 w-64 rounded-xl z-20 overflow-hidden dark:bg-blue-grayish bg-white-default transition-colors duration-150 shadow-md">
+					<div className="m-1 rounded-lg hover:bg-white-hover dark:hover:bg-black-hover active:bg-white-active dark:active:bg-black-active group overflow-hidden transition-background duration-150">
 						<Link href="/account/" className="text-black-light dark:text-white-gray" title="My Profile">
 							<span>
 								<div
@@ -54,7 +54,7 @@ export default function NavProfileMenu({ links, user }: { links: LinkType[][]; u
 						{links.map((linksGroup, i) => (
 							<div
 								key={i}
-								className={`${i != links.length - 1 ? 'border-b-1 border-white-gray dark:border-gray transition-colors duration-150' : ''} py-1`}
+								className={`py-0.5 ${i != links.length - 1 ? 'border-b-1 border-white-gray dark:border-gray transition-colors duration-150' : ''}`}
 							>
 								{linksGroup.map((link, ind) => (
 									<NavProfileLink key={ind} link={link} />
@@ -86,7 +86,7 @@ function NavProfileLink({ link }: { link: LinkType }) {
 	);
 	return (
 		<div
-			className={`${link.type != 'switch' && 'hover:bg-white-hover dark:hover:bg-black-hover active:bg-white-active dark:active:bg-black-active rounded-md my-0.5 transition-background duration-150'} group`}
+			className={`${link.type != 'switch' && 'hover:bg-white-hover dark:hover:bg-black-hover active:bg-white-active dark:active:bg-black-active rounded-lg my-0.5 transition-background duration-150'} group`}
 		>
 			<Button link={link}>
 				<span className="block text-black-light dark:text-white-gray ">

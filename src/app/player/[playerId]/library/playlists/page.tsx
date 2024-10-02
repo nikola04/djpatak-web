@@ -40,7 +40,7 @@ export default function PlaylistsPage({
 	return (
 		<div className="flex flex-col w-full px-3 pr-4 py-5">
 			<PageHeader path={['Playlists']} title="My Playlists" Buttons={memoizedHeaderButtons} />
-			<div className="w-full">
+			<div className="w-full px-2">
 				{!playlistsLoading && playlists.length == 0 ? (
 					<div className="py-4">
 						<p className="text-black-light dark:text-white-gray">No playlists. You can create one now.</p>

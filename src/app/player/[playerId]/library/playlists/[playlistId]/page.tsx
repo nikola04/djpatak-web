@@ -85,8 +85,8 @@ export default function PlaylistPage({
 			{data && (
 				<PageHeader path={['Playlists', data.name]} title={data.name} folder={false} Buttons={memoizedHeaderButtons} goBack={goToPlaylists} />
 			)}
-			<div className="w-full py-4">{data && <PlaylistHeader playlist={data} />}</div>
-			<div className="w-full">
+			<div className="w-full px-2 py-4">{data && <PlaylistHeader playlist={data} />}</div>
+			<div className="w-full px-2">
 				<TracksList guildId={playerId} tracks={playlistTracks} loading={playlistTracksLoading} Buttons={memoizedButtons} />
 			</div>
 		</div>
@@ -187,7 +187,7 @@ const PlaylistHeader = ({ playlist }: { playlist: Playlist }) => {
 const PlaylistPageSceleton = () => (
 	<div className="flex flex-col w-full px-3 pr-4 py-5">
 		<div className="flex items-center justify-between w-full">
-			<div>
+			<div className='p-2'>
 				<p className="text-black-default dark:text-white-default opacity-40 text-sm py-0.5">Playlists /</p>
 				<div className="flex items-center my-3">
 					<div className="px-2 mr-1">
