@@ -8,3 +8,12 @@ export type DiscordGuild = {
     approximate_member_count: number|undefined,
     approximate_presence_count: number|undefined
 }
+
+export type Role = {
+    id: string,
+    name: string,
+    unicodeEmoji: string|null,
+    color: number,
+    permissions: string,
+    rawPosition: number
+}

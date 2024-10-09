@@ -151,17 +151,17 @@ function GuildSelector({
 							<div style={{ padding: '2px' }}>
 								<GuildIcon guild={guild} className="bg-black-default dark:bg-transparent" size={24} />
 							</div>
-							<p className="text-black-light dark:text-white-gray px-2 text-base text-nowrap text-ellipsis overflow-hidden">
+							<p className="text-black-light dark:text-white-gray px-2 text-base text-nowrap text-ellipsis overflow-hidden dark:text-opacity-95">
 								{guild.name}
 							</p>
 						</div>
 					))}
 					<div className="p-1 border-b border-white-gray dark:border-black-default"></div>
-					<div className="mt-2 flex w-full items-center top-0 p-1 hover:bg-white-hover active:bg-white-active rounded-md cursor-pointer transition-all">
+					<div className="mt-1 flex w-full items-center top-0 p-1 hover:bg-white-hover dark:hover:bg-blue-light dark:hover:bg-opacity-5 active:bg-white-active dark:active:bg-opacity-10 rounded-lg cursor-pointer transition-colors duration-150">
 						<div className="p-1">
 							<BsPlusCircle className="w-5 h-5 text-black-light dark:text-white-gray text-sm" />
 						</div>
-						<p className="text-black-light dark:text-white-gray px-2 text-base text-nowrap text-ellipsis overflow-hidden">Add Server</p>
+						<p className="text-black-light dark:text-white-gray px-2 text-base text-nowrap text-ellipsis overflow-hidden">Add server</p>
 					</div>
 				</div>
 			)}
