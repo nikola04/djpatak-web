@@ -17,4 +17,7 @@ https://github.com/nikola04/djpatak-api
 ##### * Note: Project is still in a development
 
 # Screenshots
-![imgur.com]((https://imgur.com/a/qwnCjdU))
+![imgur.com](https://i.imgur.com/AAqbhQd.png)
+
+### Imgur Gallery
+https://imgur.com/a/qwnCjdU
