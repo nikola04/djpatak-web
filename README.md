@@ -15,3 +15,6 @@ https://github.com/nikola04/djpatak-api
 - Tailwind CSS
 
 ##### * Note: Project is still in a development
+
+# Screenshots
+![imgur.com]((https://imgur.com/a/qwnCjdU))
