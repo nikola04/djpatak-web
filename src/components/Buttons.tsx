@@ -26,12 +26,13 @@ interface DefaultButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 	icon?: ReactNode;
 }
 
-const DefaultButton = ({ title, value, icon, className, ...restProps }: DefaultButtonProps) => {
+const DefaultButton = ({ title, disabled, value, icon, className, ...restProps }: DefaultButtonProps) => {
 	const Icon = icon;
 	return (
 		<button
 			title={title ?? value}
-			className={`transition-all rounded outline-0 border-1 border-transparent py-1.5 px-2.5 ${className}`}
+			disabled={disabled}
+			className={`transition-all rounded outline-0 border-1 border-transparent py-1.5 px-2.5 ${className} ${disabled && 'cursor-not-allowed'}`}
 			{...restProps}
 		>
 			<span>
