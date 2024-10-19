@@ -14,10 +14,11 @@ import { IoIosClose } from 'react-icons/io';
 import { isParentOf } from '@/utils/frontend';
 import { IconType } from 'react-icons';
 import { LuLamp } from 'react-icons/lu';
-import { PiGear, PiGearBold, PiGearSix } from 'react-icons/pi';
+import { PiGear } from 'react-icons/pi';
 import { FiLogOut } from 'react-icons/fi';
 import { HiOutlineServerStack } from 'react-icons/hi2';
 import { useTheme } from '../providers/Theme';
+import HelpMenu from './HelpMenu';
 
 interface BaseLinkType {
 	name: string;
@@ -103,6 +104,7 @@ export default function Nav({
 		<nav className="pr-4 flex justify-between items-center" style={{ height: '64px' }}>
 			{guildId ? <TrackSearch isDarkTheme={isDarkTheme} guildId={guildId} /> : <div></div>}
 			<div className="flex items-center">
+				<HelpMenu/>
 				<ProfileMenu profileLinks={[accountLinks, logoutLinks]} />
 			</div>
 		</nav>

@@ -24,9 +24,9 @@ export default function NavProfileMenu({ links, user }: { links: LinkType[][]; u
 	return (
 		<div ref={profileButtonRef} className="relative px-2">
 			<button
-				onClick={() => setShowProfile(!showProfile)}
+				onClick={() => setShowProfile(prev => !prev)}
 				title="My Profile"
-				className={`rounded-full w-9 h-9 bg-black-pure cursor-pointer overflow-hidden hover:opacity-85 active:opacity-70`}
+				className={`rounded-full w-9 h-9 bg-black-pure cursor-pointer overflow-hidden hover:opacity-85 active:opacity-70 transition-all duration-150`}
 			>
 				<img src={user.image} width={36} height={36} alt={'Profile Image'} />
 			</button>

@@ -63,7 +63,7 @@ function BlockWithRolesToAllow({ title, description, roles, allowedRoles, setAll
         { !allowEveryone && <div className="flex flex-wrap gap-1.5 py-4">
             { allowedRoles.map((role => {
                 const [primary, secondary] = generateRoleColorSet(role.color)
-                return <div className="flex items-center bg-black-light pl-2 pr-1 py-0.5 rounded-lg" style={{ backgroundColor: primary, color: secondary }}>
+                return <div key={role.id} className="flex items-center bg-black-light pl-2 pr-1 py-0.5 rounded-lg" style={{ backgroundColor: primary, color: secondary }}>
                     <p className="text-sm">{ role.name.trim() }</p>
                     <button onClick={() => removeRole(role.id)}>
                         <IoIosClose className="text-xl" style={{ color: secondary }}/>
