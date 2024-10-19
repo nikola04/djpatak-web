@@ -11,7 +11,7 @@ import { FaBell, FaDatabase, FaTrash } from 'react-icons/fa6';
 const sleep = async (time: number) => new Promise((res, rej) => setTimeout(() => res(1), time));
 
 export default function SettingsPage() {
-	const [notifications, setNotifications] = useState<boolean>(true);
+	const [notifications, setNotifications] = useState<boolean>(false);
 	const [notificationsLoading, setNotificationsLoading] = useState<boolean>(false);
 	const [usageAnalythics, setUsageAnalythics] = useState<boolean>(false);
 	const [usageAnalythicsLoading, setUsageAnalythicsLoading] = useState<boolean>(false);
@@ -63,6 +63,7 @@ export default function SettingsPage() {
 					value={notifications}
 					onChange={updateNotification}
 					loading={notificationsLoading}
+					disabled={true}
 				/>
 				<SectionHeader title="Account Data" description="Delete or change how your data is being used." />
 				<SettingWithSwitch
@@ -72,13 +73,14 @@ export default function SettingsPage() {
 					value={usageAnalythics}
 					onChange={updateUsageAnalythics}
 					loading={usageAnalythicsLoading}
+					disabled={true}
 				/>
 				<Setting
 					title="Delete Account Data"
 					icon={FaTrash}
 					description="Delete all account data including liked songs, playlists and others."
 				>
-					<DangerButton className="!py-1 !text-sm" title={'Delete Data'} value={'Delete'} />
+					<DangerButton className="!py-1 !text-sm" title={'Delete Data'} value={'Delete'} disabled={true} />
 				</Setting>
 			</div>
 		</div>
@@ -111,8 +113,9 @@ interface SettingWithSwitchProps extends Omit<SettingProps, 'children'> {
 	value: boolean;
 	onChange: () => any;
 	loading: boolean;
+	disabled?: boolean
 }
-const SettingWithSwitch = ({ value, onChange, loading, ...settingProps }: SettingWithSwitchProps) => {
+const SettingWithSwitch = ({ value, onChange, disabled, loading, ...settingProps }: SettingWithSwitchProps) => {
 	const MemoizedSwitch = useMemo(
 		() => (
 			<SwitchWithRef
@@ -122,7 +125,7 @@ const SettingWithSwitch = ({ value, onChange, loading, ...settingProps }: Settin
 				onColor="bg-white-default"
 				onIcon={<FaCheck size={12} className="text-blue-light" />}
 				onChange={onChange}
-				disabled={loading}
+				disabled={disabled || loading}
 			/>
 		),
 		[value, loading]
